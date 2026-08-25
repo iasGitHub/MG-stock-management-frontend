@@ -1,0 +1,96 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p>Vue d'ensemble de votre stock</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p class="loading">Chargement des statistiques...</p>
+  } @else if (stats(); as s) {
+    <section class="stats-grid">
+      <div class="card stat-card">
+        <span class="stat-icon primary">📦</span>
+        <div>
+          <strong>{{ s.totalProduits }}</strong>
+          <small>Produits référencés</small>
+        </div>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-icon quantity">🔢</span>
+        <div>
+          <strong>{{ s.quantiteTotale }}</strong>
+          <small>Quantité totale en stock</small>
+        </div>
+      </div>
+
+      <div class="card stat-card" [class.alert]="s.produitsEnAlerte > 0">
+        <span class="stat-icon warning">⚠️</span>
+        <div>
+          <strong>{{ s.produitsEnAlerte }}</strong>
+          <small>Produits en alerte</small>
+        </div>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-icon value">💰</span>
+        <div>
+          <strong>{{ formatMontant(s.valeurStock) }}</strong>
+          <small>Valeur du stock (MRU)</small>
+        </div>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-icon in">⬇️</span>
+        <div>
+          <strong>{{ s.entreesDuMois }}</strong>
+          <small>Entrées ce mois-ci</small>
+        </div>
+      </div>
+
+      <div class="card stat-card">
+        <span class="stat-icon out">⬆️</span>
+        <div>
+          <strong>{{ s.sortiesDuMois }}</strong>
+          <small>Sorties ce mois-ci</small>
+        </div>
+      </div>
+    </section>
+  }
+
+  @if (!loading() && produitsEnAlerte().length > 0) {
+    <section class="card alerts-section">
+      <h2>🚨 Produits à réapprovisionner</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Stock actuel</th>
+            <th>Seuil minimum</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (produit of produitsEnAlerte(); track produit.id) {
+            <tr>
+              <td><code>{{ produit.reference }}</code></td>
+              <td>{{ produit.nom }}</td>
+              <td>{{ produit.categorie }}</td>
+              <td>
+                <span class="badge badge-danger">{{ produit.quantiteStock }}</span>
+              </td>
+              <td>{{ produit.seuilMin }}</td>
+              <td>
+                <a routerLink="/mouvements" class="link">Approvisionner →</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+</div>

@@ -1,0 +1,66 @@
+.table-card {
+  padding: 6px 16px 16px;
+
+  .loading,
+  .empty {
+    padding: 30px;
+    text-align: center;
+    color: var(--gray-500);
+  }
+}
+
+.desc {
+  color: var(--gray-500);
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.alert-error {
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.modal-error {
+  margin: 16px 22px 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 14px;
+
+  &.three {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .form-group {
+    min-width: 0;
+  }
+}
+
+.modal.small {
+  max-width: 420px;
+}
+
+.confirm-body {
+  padding: 20px 22px;
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.5;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: var(--danger);
+}

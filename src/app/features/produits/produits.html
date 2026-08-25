@@ -1,0 +1,184 @@
+<div class="page">
+  <div class="toolbar">
+    <div>
+      <h1>Produits</h1>
+      <p>{{ totalElements() }} produit(s) référencé(s)</p>
+    </div>
+
+    <div class="toolbar-actions">
+      <input
+        type="search"
+        placeholder="Rechercher par nom ou référence..."
+        [value]="search()"
+        (input)="onSearch($event)"
+      />
+      <button class="btn btn-primary" (click)="ouvrirCreation()">+ Nouveau produit</button>
+    </div>
+  </div>
+
+  @if (errorMessage(); as message) {
+    <div class="alert-error">{{ message }}</div>
+  }
+
+  <div class="card table-card">
+    @if (loading()) {
+      <p class="loading">Chargement...</p>
+    } @else if (produits().length === 0) {
+      <p class="empty">Aucun produit trouvé. Créez votre premier produit !</p>
+    } @else {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Stock</th>
+            <th>Seuil min.</th>
+            <th>Prix unitaire</th>
+            <th>État</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (produit of produits(); track produit.id) {
+            <tr>
+              <td><code>{{ produit.reference }}</code></td>
+              <td>
+                <strong>{{ produit.nom }}</strong>
+                @if (produit.description) {
+                  <br />
+                  <small class="desc">{{ produit.description }}</small>
+                }
+              </td>
+              <td>{{ produit.categorie }}</td>
+              <td><strong>{{ produit.quantiteStock }}</strong></td>
+              <td>{{ produit.seuilMin }}</td>
+              <td>{{ produit.prixUnitaire | number: '1.0-0' }} MRU</td>
+              <td>
+                @if (produit.enAlerte) {
+                  <span class="badge badge-danger">⚠ Alerte stock</span>
+                } @else {
+                  <span class="badge badge-success">✓ OK</span>
+                }
+              </td>
+              <td class="actions-cell">
+                <button class="btn btn-secondary btn-sm" (click)="ouvrirEdition(produit)">Modifier</button>
+                @if (peutSupprimer()) {
+                  <button class="btn btn-danger btn-sm" (click)="confirmerSuppression(produit)">Supprimer</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>
+        <div class="actions">
+          <button [disabled]="page() === 0" (click)="allerAPage(page() - 1)">‹ Précédent</button>
+          <button [disabled]="page() >= totalPages() - 1" (click)="allerAPage(page() + 1)">Suivant ›</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (modalOuvert()) {
+  <div class="modal-backdrop" (click)="fermerModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ produitEnEdition() ? 'Modifier le produit' : 'Nouveau produit' }}</h3>
+        <button class="close" type="button" (click)="fermerModal()">×</button>
+      </div>
+
+      @if (errorMessage(); as message) {
+        <div class="alert-error modal-error">{{ message }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="enregistrer()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Référence *</label>
+            <input type="text" formControlName="reference" placeholder="REF-001" />
+            @if (form.controls.reference.touched && form.controls.reference.invalid) {
+              <span class="error">Référence obligatoire (max 50 caractères)</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Catégorie *</label>
+            <input type="text" formControlName="categorie" placeholder="Informatique, Fournitures..." />
+            @if (form.controls.categorie.touched && form.controls.categorie.invalid) {
+              <span class="error">Catégorie obligatoire</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nom du produit *</label>
+          <input type="text" formControlName="nom" placeholder="Nom du produit" />
+          @if (form.controls.nom.touched && form.controls.nom.invalid) {
+            <span class="error">Nom obligatoire (max 100 caractères)</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea formControlName="description" rows="2" placeholder="Description (optionnel)"></textarea>
+        </div>
+
+        <div class="form-row three">
+          <div class="form-group">
+            <label>Seuil minimum d'alerte *</label>
+            <input type="number" formControlName="seuilMin" min="0" />
+            @if (form.controls.seuilMin.touched && form.controls.seuilMin.invalid) {
+              <span class="error">Valeur invalide</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Prix unitaire (MRU) *</label>
+            <input type="number" formControlName="prixUnitaire" min="0.01" />
+            @if (form.controls.prixUnitaire.touched && form.controls.prixUnitaire.invalid) {
+              <span class="error">Prix obligatoire (> 0)</span>
+            }
+          </div>
+
+          @if (!produitEnEdition()) {
+            <div class="form-group">
+              <label>Quantité initiale</label>
+              <input type="number" formControlName="quantiteInitiale" min="0" />
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="fermerModal()">Annuler</button>
+          <button type="submit" class="btn btn-primary">
+            {{ produitEnEdition() ? 'Enregistrer' : 'Créer le produit' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (suppressionEnCours(); as produit) {
+  <div class="modal-backdrop" (click)="suppressionEnCours.set(null)">
+    <div class="modal small" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirmer la suppression</h3>
+        <button class="close" type="button" (click)="suppressionEnCours.set(null)">×</button>
+      </div>
+      <div class="confirm-body">
+        Voulez-vous vraiment supprimer le produit
+        <strong>« {{ produit.nom }} »</strong> ({{ produit.reference }}) ?
+        Cette action est irréversible.
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="suppressionEnCours.set(null)">Annuler</button>
+        <button class="btn btn-danger delete-btn" (click)="supprimer()">Supprimer définitivement</button>
+      </div>
+    </div>
+  </div>
+}

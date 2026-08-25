@@ -1,0 +1,116 @@
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--gray-600);
+    font-weight: 600;
+
+    select {
+      padding: 8px 12px;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      outline: none;
+      min-width: 240px;
+
+      &:focus {
+        border-color: var(--primary);
+      }
+    }
+  }
+
+  .type-filters .chip {
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--gray-300);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+
+    &.active {
+      border-color: var(--primary);
+      color: #fff;
+      background: var(--primary);
+    }
+
+    &.entree.active {
+      border-color: var(--success);
+      background: var(--success);
+    }
+
+    &.sortie.active {
+      border-color: var(--danger);
+      background: var(--danger);
+    }
+  }
+}
+
+.sortie-btn:hover:not(:disabled) {
+  background: var(--danger) !important;
+  color: #fff !important;
+}
+
+.table-card {
+  padding: 6px 16px 16px;
+
+  .loading,
+  .empty {
+    padding: 30px;
+    text-align: center;
+    color: var(--gray-500);
+  }
+}
+
+.ref-ext {
+  color: var(--gray-500);
+}
+
+.alert-error {
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.modal-error {
+  margin: 16px 22px 0;
+}
+
+.modal-header.header-entree {
+  border-top: 3px solid var(--success);
+}
+
+.modal-header.header-sortie {
+  border-top: 3px solid var(--danger);
+}
+
+.stock-info {
+  margin: -4px 0 14px;
+  padding: 9px 13px;
+  background: var(--warning-bg);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--warning);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 14px;
+}
+
+.help {
+  font-size: 11.5px;
+  color: var(--gray-400);
+}

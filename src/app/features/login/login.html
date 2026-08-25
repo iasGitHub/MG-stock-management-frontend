@@ -1,0 +1,45 @@
+<div class="login-page">
+  <div class="login-card card">
+    <div class="login-header">
+      <span class="logo">MG</span>
+      <h1>Montage Gold</h1>
+      <p>Gestion de stock - Connexion</p>
+    </div>
+
+    @if (errorMessage(); as error) {
+      <div class="alert-error">{{ error }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          placeholder="Ex : admin"
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Votre mot de passe"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button class="btn btn-primary submit" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          Connexion en cours...
+        } @else {
+          Se connecter
+        }
+      </button>
+    </form>
+  </div>
+</div>

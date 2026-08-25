@@ -1,0 +1,235 @@
+<div class="page">
+  <div class="toolbar">
+    <div>
+      <h1>Mouvements de stock</h1>
+      <p>{{ totalElements() }} mouvement(s) enregistré(s)</p>
+    </div>
+
+    <div class="toolbar-actions">
+      <button class="btn btn-success" (click)="ouvrirModal('ENTREE')">⬇ Nouvelle entrée</button>
+      <button class="btn btn-danger sortie-btn" (click)="ouvrirModal('SORTIE')">⬆ Nouvelle sortie</button>
+    </div>
+  </div>
+
+  <div class="filters card">
+    <div class="filter-group">
+      <label>Produit :</label>
+      <select (change)="filtrerParProduit($event)">
+        <option value="">Tous les produits</option>
+        @for (produit of produits(); track produit.id) {
+          <option [value]="produit.id">{{ produit.nom }} ({{ produit.reference }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group type-filters">
+      <label>Type :</label>
+      <button
+        class="chip"
+        [class.active]="filtreType() === null"
+        (click)="filtrerParType(null)"
+      >Tous</button>
+      <button
+        class="chip entree"
+        [class.active]="filtreType() === 'ENTREE'"
+        (click)="filtrerParType('ENTREE')"
+      >Entrées</button>
+      <button
+        class="chip sortie"
+        [class.active]="filtreType() === 'SORTIE'"
+        (click)="filtrerParType('SORTIE')"
+      >Sorties</button>
+    </div>
+  </div>
+
+  @if (errorMessage(); as message) {
+    <div class="alert-error">{{ message }}</div>
+  }
+
+  <div class="card table-card">
+    @if (loading()) {
+      <p class="loading">Chargement...</p>
+    } @else if (mouvements().length === 0) {
+      <p class="empty">Aucun mouvement enregistré pour le moment.</p>
+    } @else {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Prix unitaire</th>
+            <th>Motif / Référence</th>
+            <th>Fournisseur / Destinataire</th>
+            <th>Utilisateur</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (mouvement of mouvements(); track mouvement.id) {
+            <tr>
+              <td>{{ mouvement.dateMouvement | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                @if (mouvement.type === 'ENTREE') {
+                  <span class="badge badge-success">Entrée</span>
+                } @else {
+                  <span class="badge badge-danger">Sortie</span>
+                }
+              </td>
+              <td>
+                <strong>{{ mouvement.produitNom }}</strong>
+                <br />
+                <code>{{ mouvement.produitReference }}</code>
+              </td>
+              <td><strong>{{ mouvement.quantite }}</strong></td>
+              <td>{{ mouvement.prixUnitaire | number: '1.0-0' }} MRU</td>
+              <td>
+                @if (mouvement.motif) {<span>{{ mouvement.motif }}</span>}
+                @if (mouvement.referenceExterne) {
+                  <br />
+                  <small class="ref-ext">Réf. : {{ mouvement.referenceExterne }}</small>
+                }
+              </td>
+              <td>
+                @if (mouvement.type === 'ENTREE') {
+                  @if (mouvement.fournisseurNom) {
+                    <code>{{ mouvement.fournisseurCode }}</code>
+                    {{ mouvement.fournisseurNom }}
+                  } @else {
+                    —
+                  }
+                } @else {
+                  {{ mouvement.destinataire || '—' }}
+                }
+              </td>
+              <td>{{ mouvement.utilisateurNom }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>
+        <div class="actions">
+          <button [disabled]="page() === 0" (click)="allerAPage(page() - 1)">‹ Précédent</button>
+          <button [disabled]="page() >= totalPages() - 1" (click)="allerAPage(page() + 1)">Suivant ›</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (modalOuvert()) {
+  <div class="modal-backdrop" (click)="fermerModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header" [class.header-entree]="typeSelectionne() === 'ENTREE'" [class.header-sortie]="typeSelectionne() === 'SORTIE'">
+        <h3>
+          {{ typeSelectionne() === 'ENTREE' ? '⬇ Enregistrer une entrée' : '⬆ Enregistrer une sortie' }}
+        </h3>
+        <button class="close" type="button" (click)="fermerModal()">×</button>
+      </div>
+
+      @if (errorMessage(); as message) {
+        <div class="alert-error modal-error">{{ message }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="enregistrer()">
+        <div class="form-group">
+          <label>Produit *</label>
+          <select formControlName="produitId">
+            <option [ngValue]="null">-- Sélectionner un produit --</option>
+            @for (produit of produits(); track produit.id) {
+              <option [value]="produit.id">
+                {{ produit.nom }} ({{ produit.reference }}) - Stock : {{ produit.quantiteStock }}
+              </option>
+            }
+          </select>
+          @if (form.controls.produitId.touched && form.controls.produitId.invalid) {
+            <span class="error">Veuillez sélectionner un produit</span>
+          }
+        </div>
+
+        @if (produitSelectionne() && typeSelectionne() === 'SORTIE') {
+          <p class="stock-info">
+            Stock disponible : <strong>{{ produitSelectionne()!.quantiteStock }}</strong>
+          </p>
+        }
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quantité *</label>
+            <input type="number" formControlName="quantite" min="1" />
+            @if (form.controls.quantite.touched && form.controls.quantite.invalid) {
+              <span class="error">La quantité doit être au moins 1</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Prix unitaire (MRU)</label>
+            <input type="number" formControlName="prixUnitaire" min="0" />
+            <small class="help">Laisser vide = prix du produit</small>
+          </div>
+        </div>
+
+        @if (typeSelectionne() === 'ENTREE') {
+          <div class="form-group">
+            <label>Fournisseur *</label>
+            <select formControlName="fournisseurId">
+              <option [ngValue]="null">-- Sélectionner un fournisseur --</option>
+              @for (fournisseur of fournisseurs(); track fournisseur.id) {
+                <option [ngValue]="fournisseur.id">{{ fournisseur.code }} — {{ fournisseur.nom }}</option>
+              }
+            </select>
+            @if (form.controls.fournisseurId.touched && form.controls.fournisseurId.invalid) {
+              <span class="error">Veuillez sélectionner un fournisseur</span>
+            }
+          </div>
+        }
+
+        @if (typeSelectionne() === 'SORTIE') {
+          <div class="form-group">
+            <label>Destinataire *</label>
+            <input
+              type="text"
+              formControlName="destinataire"
+              placeholder="Nom du client, service ou bénéficiaire..."
+            />
+            @if (form.controls.destinataire.touched && form.controls.destinataire.invalid) {
+              <span class="error">Le destinataire est obligatoire (max 150 caractères)</span>
+            }
+          </div>
+        }
+
+        <div class="form-group">
+          <label>Motif</label>
+          <input
+            type="text"
+            formControlName="motif"
+            [placeholder]="typeSelectionne() === 'ENTREE' ? 'Ex : Réception fournisseur' : 'Ex : Vente client, Dotation...'"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Référence externe</label>
+          <input
+            type="text"
+            formControlName="referenceExterne"
+            placeholder="N° facture, bon de commande..."
+          />
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="fermerModal()">Annuler</button>
+          <button
+            type="submit"
+            class="btn"
+            [class.btn-success]="typeSelectionne() === 'ENTREE'"
+            [class.btn-primary]="typeSelectionne() === 'SORTIE'"
+          >
+            Valider le mouvement
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
