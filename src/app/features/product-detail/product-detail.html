@@ -58,58 +58,60 @@
       </div>
     } @else {
       <div class="card table-card">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Quantité</th>
-              <th>Prix unitaire</th>
-              <th>Fournisseur / Destinataire</th>
-              <th>Motif</th>
-              <th>Utilisateur</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (m of movements(); track m.id) {
+        <div class="table-scroll">
+          <table class="table">
+            <thead>
               <tr>
-                <td>{{ m.movementDate | date: 'dd/MM/yyyy HH:mm' }}</td>
-                <td>
-                  @if (m.type === 'IN') {
-                    <span class="badge badge-success">Entrée</span>
-                  } @else {
-                    <span class="badge badge-danger">Sortie</span>
-                  }
-                </td>
-                <td>
-                  @if (m.type === 'IN') {
-                    <strong class="qty-in">+{{ m.quantity }}</strong>
-                  } @else {
-                    <strong class="qty-out">-{{ m.quantity }}</strong>
-                  }
-                </td>
-                <td>{{ m.unitPrice | number: '1.0-0' }} MRU</td>
-                <td>
-                  @if (m.type === 'IN') {
-                    {{ m.supplierName || '—' }}
-                    @if (m.supplierNif) {
-                      <br /><small class="ref-ext">NIF: {{ m.supplierNif }}</small>
-                    }
-                  } @else {
-                    {{ m.recipient || '—' }}
-                  }
-                </td>
-                <td>
-                  @if (m.reason) { {{ m.reason }} }
-                  @if (m.externalReference) {
-                    <br /><small class="ref-ext">Réf. : {{ m.externalReference }}</small>
-                  }
-                </td>
-                <td>{{ m.userName }}</td>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Fournisseur / Destinataire</th>
+                <th>Motif</th>
+                <th>Utilisateur</th>
               </tr>
-            }
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              @for (m of movements(); track m.id) {
+                <tr>
+                  <td>{{ m.movementDate | date: 'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    @if (m.type === 'IN') {
+                      <span class="badge badge-success">Entrée</span>
+                    } @else {
+                      <span class="badge badge-danger">Sortie</span>
+                    }
+                  </td>
+                  <td>
+                    @if (m.type === 'IN') {
+                      <strong class="qty-in">+{{ m.quantity }}</strong>
+                    } @else {
+                      <strong class="qty-out">-{{ m.quantity }}</strong>
+                    }
+                  </td>
+                  <td>{{ m.unitPrice | number: '1.0-0' }} MRU</td>
+                  <td>
+                    @if (m.type === 'IN') {
+                      {{ m.supplierName || '—' }}
+                      @if (m.supplierNif) {
+                        <br /><small class="ref-ext">NIF: {{ m.supplierNif }}</small>
+                      }
+                    } @else {
+                      {{ m.recipient || '—' }}
+                    }
+                  </td>
+                  <td>
+                    @if (m.reason) { {{ m.reason }} }
+                    @if (m.externalReference) {
+                      <br /><small class="ref-ext">Réf. : {{ m.externalReference }}</small>
+                    }
+                  </td>
+                  <td>{{ m.userName }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     }
   }

@@ -26,37 +26,39 @@
     } @else if (suppliers().length === 0) {
       <p class="empty">Aucun fournisseur trouvé. Créez votre premier fournisseur !</p>
     } @else {
-      <table class="table">
-        <thead>
-          <tr>
-            <th>NIF</th>
-            <th>Nom</th>
-            <th>Téléphone</th>
-            <th>Adresse</th>
-            <th>Créé le</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (supplier of suppliers(); track supplier.id) {
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
             <tr>
-              <td><code>{{ supplier.nif }}</code></td>
-              <td><strong>{{ supplier.name }}</strong></td>
-              <td>{{ supplier.phone || '—' }}</td>
-              <td>{{ supplier.address || '—' }}</td>
-              <td>{{ supplier.createdDate | date: 'dd/MM/yyyy' }}</td>
-              <td>
-                <div class="actions-cell">
-                  <button class="btn btn-secondary btn-sm" (click)="openEdit(supplier)">Modifier</button>
-                  @if (canDelete()) {
-                    <button class="btn btn-danger btn-sm delete-btn" (click)="confirmDelete(supplier)">Supprimer</button>
-                  }
-                </div>
-              </td>
+              <th>NIF</th>
+              <th>Nom</th>
+              <th>Téléphone</th>
+              <th>Adresse</th>
+              <th>Créé le</th>
+              <th>Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (supplier of suppliers(); track supplier.id) {
+              <tr>
+                <td><code>{{ supplier.nif }}</code></td>
+                <td><strong>{{ supplier.name }}</strong></td>
+                <td>{{ supplier.phone || '—' }}</td>
+                <td>{{ supplier.address || '—' }}</td>
+                <td>{{ supplier.createdDate | date: 'dd/MM/yyyy' }}</td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="btn btn-secondary btn-sm" (click)="openEdit(supplier)">Modifier</button>
+                    @if (canDelete()) {
+                      <button class="btn btn-danger btn-sm delete-btn" (click)="confirmDelete(supplier)">Supprimer</button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination">
         <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>

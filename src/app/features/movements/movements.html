@@ -52,61 +52,63 @@
     } @else if (movements().length === 0) {
       <p class="empty">Aucun mouvement enregistré pour le moment.</p>
     } @else {
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Produit</th>
-            <th>Quantité</th>
-            <th>Prix unitaire</th>
-            <th>Motif / Référence</th>
-            <th>Fournisseur / Destinataire</th>
-            <th>Utilisateur</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (movement of movements(); track movement.id) {
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
             <tr>
-              <td>{{ movement.movementDate | date: 'dd/MM/yyyy HH:mm' }}</td>
-              <td>
-                @if (movement.type === 'IN') {
-                  <span class="badge badge-success">Entrée</span>
-                } @else {
-                  <span class="badge badge-danger">Sortie</span>
-                }
-              </td>
-              <td>
-                <strong>{{ movement.productName }}</strong>
-                <br />
-                <code>{{ movement.productReference }}</code>
-              </td>
-              <td><strong>{{ movement.quantity }}</strong></td>
-              <td>{{ movement.unitPrice | number: '1.0-0' }} MRU</td>
-              <td>
-                @if (movement.reason) {<span>{{ movement.reason }}</span>}
-                @if (movement.externalReference) {
-                  <br />
-                  <small class="ref-ext">Réf. : {{ movement.externalReference }}</small>
-                }
-              </td>
-              <td>
-                @if (movement.type === 'IN') {
-                  @if (movement.supplierName) {
-                    <code>{{ movement.supplierNif }}</code>
-                    {{ movement.supplierName }}
-                  } @else {
-                    —
-                  }
-                } @else {
-                  {{ movement.recipient || '—' }}
-                }
-              </td>
-              <td>{{ movement.userName }}</td>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Produit</th>
+              <th>Quantité</th>
+              <th>Prix unitaire</th>
+              <th>Motif / Référence</th>
+              <th>Fournisseur / Destinataire</th>
+              <th>Utilisateur</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (movement of movements(); track movement.id) {
+              <tr>
+                <td>{{ movement.movementDate | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  @if (movement.type === 'IN') {
+                    <span class="badge badge-success">Entrée</span>
+                  } @else {
+                    <span class="badge badge-danger">Sortie</span>
+                  }
+                </td>
+                <td>
+                  <strong>{{ movement.productName }}</strong>
+                  <br />
+                  <code>{{ movement.productReference }}</code>
+                </td>
+                <td><strong>{{ movement.quantity }}</strong></td>
+                <td>{{ movement.unitPrice | number: '1.0-0' }} MRU</td>
+                <td>
+                  @if (movement.reason) {<span>{{ movement.reason }}</span>}
+                  @if (movement.externalReference) {
+                    <br />
+                    <small class="ref-ext">Réf. : {{ movement.externalReference }}</small>
+                  }
+                </td>
+                <td>
+                  @if (movement.type === 'IN') {
+                    @if (movement.supplierName) {
+                      <code>{{ movement.supplierNif }}</code>
+                      {{ movement.supplierName }}
+                    } @else {
+                      —
+                    }
+                  } @else {
+                    {{ movement.recipient || '—' }}
+                  }
+                </td>
+                <td>{{ movement.userName }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination">
         <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>

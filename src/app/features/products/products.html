@@ -26,51 +26,53 @@
     } @else if (products().length === 0) {
       <p class="empty">Aucun produit trouvé. Créez votre premier produit !</p>
     } @else {
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Référence</th>
-            <th>Nom</th>
-            <th>Catégorie</th>
-            <th>Stock</th>
-            <th>Seuil min.</th>
-            <th>Prix unitaire</th>
-            <th>État</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (product of products(); track product.id) {
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
             <tr>
-              <td><code>{{ product.reference }}</code></td>
-              <td>
-                <a class="link" [routerLink]="['/products', product.id]"><strong>{{ product.name }}</strong></a>
-                @if (product.description) {
-                  <br />
-                  <small class="desc">{{ product.description }}</small>
-                }
-              </td>
-              <td>{{ product.category }}</td>
-              <td><strong>{{ product.stockQuantity }}</strong></td>
-              <td>{{ product.minThreshold }}</td>
-              <td>{{ product.unitPrice | number: '1.0-0' }} MRU</td>
-              <td>
-                @if (product.inAlert) {
-                  <span class="badge badge-danger">⚠ Alerte stock</span>
-                } @else {
-                  <span class="badge badge-success">✓ OK</span>
-                }
-              </td>
-              <td class="actions-cell">
-                <button class="btn btn-secondary btn-sm" (click)="openEdit(product)">Modifier</button>
-                @if (canDelete()) {
-                  <button class="btn btn-danger btn-sm" (click)="confirmDelete(product)">Supprimer</button>
-                }
-              </td>
+              <th>Référence</th>
+              <th>Nom</th>
+              <th>Catégorie</th>
+              <th>Stock</th>
+              <th>Seuil min.</th>
+              <th>Prix unitaire</th>
+              <th>État</th>
+              <th>Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (product of products(); track product.id) {
+              <tr>
+                <td><code>{{ product.reference }}</code></td>
+                <td>
+                  <a class="link" [routerLink]="['/products', product.id]"><strong>{{ product.name }}</strong></a>
+                  @if (product.description) {
+                    <br />
+                    <small class="desc">{{ product.description }}</small>
+                  }
+                </td>
+                <td>{{ product.category }}</td>
+                <td><strong>{{ product.stockQuantity }}</strong></td>
+                <td>{{ product.minThreshold }}</td>
+                <td>{{ product.unitPrice | number: '1.0-0' }} MRU</td>
+                <td>
+                  @if (product.inAlert) {
+                    <span class="badge badge-danger">⚠ Alerte stock</span>
+                  } @else {
+                    <span class="badge badge-success">✓ OK</span>
+                  }
+                </td>
+                <td class="actions-cell">
+                  <button class="btn btn-secondary btn-sm" (click)="openEdit(product)">Modifier</button>
+                  @if (canDelete()) {
+                    <button class="btn btn-danger btn-sm" (click)="confirmDelete(product)">Supprimer</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination">
         <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>

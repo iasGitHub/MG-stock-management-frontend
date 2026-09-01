@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -10,4 +10,13 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class Shell {
   readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  readonly menuOpen = signal(false);
+
+  closeMenu(): void {
+    if (this.menuOpen()) {
+      this.menuOpen.set(false);
+    }
+  }
 }

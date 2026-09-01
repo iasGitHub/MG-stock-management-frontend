@@ -20,48 +20,50 @@
     } @else if (users().length === 0) {
       <p class="empty">Aucun utilisateur.</p>
     } @else {
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Nom d'utilisateur</th>
-            <th>Nom complet</th>
-            <th>Rôle</th>
-            <th>Statut</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (user of users(); track user.id) {
-            <tr [class.inactive]="!user.active">
-              <td><code>{{ user.username }}</code></td>
-              <td><strong>{{ user.fullName }}</strong></td>
-              <td>
-                @if (user.role === 'ADMIN') {
-                  <span class="badge badge-primary">Administrateur</span>
-                } @else {
-                  <span class="badge badge-warning">Gestionnaire</span>
-                }
-              </td>
-              <td>
-                @if (user.active) {
-                  <span class="badge badge-success">Actif</span>
-                } @else {
-                  <span class="badge badge-danger">Désactivé</span>
-                }
-              </td>
-              <td class="actions-cell">
-                <button class="btn btn-secondary btn-sm" (click)="openEdit(user)">Modifier</button>
-                <button class="btn btn-secondary btn-sm" (click)="toggleActive(user)">
-                  {{ user.active ? 'Désactiver' : 'Activer' }}
-                </button>
-                @if (user.id !== auth.currentUser()?.id) {
-                  <button class="btn btn-danger btn-sm" (click)="confirmDelete(user)">Supprimer</button>
-                }
-              </td>
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nom d'utilisateur</th>
+              <th>Nom complet</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (user of users(); track user.id) {
+              <tr [class.inactive]="!user.active">
+                <td><code>{{ user.username }}</code></td>
+                <td><strong>{{ user.fullName }}</strong></td>
+                <td>
+                  @if (user.role === 'ADMIN') {
+                    <span class="badge badge-primary">Administrateur</span>
+                  } @else {
+                    <span class="badge badge-warning">Gestionnaire</span>
+                  }
+                </td>
+                <td>
+                  @if (user.active) {
+                    <span class="badge badge-success">Actif</span>
+                  } @else {
+                    <span class="badge badge-danger">Désactivé</span>
+                  }
+                </td>
+                <td class="actions-cell">
+                  <button class="btn btn-secondary btn-sm" (click)="openEdit(user)">Modifier</button>
+                  <button class="btn btn-secondary btn-sm" (click)="toggleActive(user)">
+                    {{ user.active ? 'Désactiver' : 'Activer' }}
+                  </button>
+                  @if (user.id !== auth.currentUser()?.id) {
+                    <button class="btn btn-danger btn-sm" (click)="confirmDelete(user)">Supprimer</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
   </div>
 </div>

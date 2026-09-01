@@ -26,29 +26,31 @@
     } @else if (categories().length === 0) {
       <p class="empty">Aucune catégorie trouvée. Créez votre première catégorie !</p>
     } @else {
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Nom</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (category of categories(); track category.id) {
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
             <tr>
-              <td><strong>{{ category.name }}</strong></td>
-              <td>
-                <div class="actions-cell">
-                  <button class="btn btn-secondary btn-sm" (click)="openEdit(category)">Modifier</button>
-                  @if (canDelete()) {
-                    <button class="btn btn-danger btn-sm delete-btn" (click)="confirmDelete(category)">Supprimer</button>
-                  }
-                </div>
-              </td>
+              <th>Nom</th>
+              <th>Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (category of categories(); track category.id) {
+              <tr>
+                <td><strong>{{ category.name }}</strong></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="btn btn-secondary btn-sm" (click)="openEdit(category)">Modifier</button>
+                    @if (canDelete()) {
+                      <button class="btn btn-danger btn-sm delete-btn" (click)="confirmDelete(category)">Supprimer</button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination">
         <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>

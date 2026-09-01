@@ -107,3 +107,15 @@
   text-align: center;
   color: var(--gray-500);
 }
+
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
