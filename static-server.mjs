@@ -37,18 +37,29 @@ createServer(async (req, res) => {
       res.end('Forbidden');
       return;
     }
+    const ext = extname(file).toLowerCase();
     let data;
+    let isSpaFallback = false;
     try {
       data = await readFile(file);
     } catch {
-      if (extname(pathname) !== '') {
+      if (ext !== '') {
         res.writeHead(404);
         res.end('Not Found');
         return;
       }
       data = await readFile(resolve(ROOT, 'index.html'));
+      isSpaFallback = true;
     }
-    res.writeHead(200, { 'Content-Type': MIME[extname(file).toLowerCase()] || 'application/octet-stream' });
+    const headers = { 'Content-Type': MIME[ext] || 'application/octet-stream' };
+    if (ext === '.html') {
+      headers['Cache-Control'] = 'no-cache';
+    } else if (ext === '' || isSpaFallback) {
+      headers['Cache-Control'] = 'no-cache';
+    } else {
+      headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+    }
+    res.writeHead(200, headers);
     res.end(data);
   } catch {
     res.writeHead(500);
