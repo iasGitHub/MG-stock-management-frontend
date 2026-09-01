@@ -3,10 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StockMovementRequest, StockMovement, MovementType } from '../models/movement.models';
 import { PageResponse } from '../models/product.models';
+import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class MovementService {
-  private readonly apiUrl = '/api/movements';
+  private readonly apiUrl = `${appEnv.apiUrl}/movements`;
 
   constructor(private http: HttpClient) {}
 

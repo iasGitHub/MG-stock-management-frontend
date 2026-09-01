@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, Role } from '../models/auth.models';
+import { appEnv } from '../config/env';
 
 const TOKEN_KEY = 'stock_token';
 const USER_KEY = 'stock_user';
@@ -16,7 +17,7 @@ interface StoredUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = '/api/auth';
+  private readonly apiUrl = `${appEnv.apiUrl}/auth`;
 
   private readonly userSignal = signal<StoredUser | null>(this.readUser());
   readonly currentUser = this.userSignal.asReadonly();

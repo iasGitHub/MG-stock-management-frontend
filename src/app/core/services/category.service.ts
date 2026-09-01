@@ -3,10 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse } from '../models/product.models';
 import { Category, CategoryRequest } from '../models/category.models';
+import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private readonly apiUrl = '/api/categories';
+  private readonly apiUrl = `${appEnv.apiUrl}/categories`;
 
   constructor(private http: HttpClient) {}
 

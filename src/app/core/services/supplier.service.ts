@@ -3,10 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse } from '../models/product.models';
 import { Supplier, SupplierRequest } from '../models/supplier.models';
+import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class SupplierService {
-  private readonly apiUrl = '/api/suppliers';
+  private readonly apiUrl = `${appEnv.apiUrl}/suppliers`;
 
   constructor(private http: HttpClient) {}
 

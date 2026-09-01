@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DashboardStats } from '../models/dashboard.models';
 import { Product } from '../models/product.models';
+import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  private readonly apiUrl = '/api/dashboard';
+  private readonly apiUrl = `${appEnv.apiUrl}/dashboard`;
 
   constructor(private http: HttpClient) {}
 
@@ -15,6 +16,6 @@ export class DashboardService {
   }
 
   getProductsInAlert(): Observable<Product[]> {
-    return this.http.get<Product[]>(`/api/products/alerts`);
+    return this.http.get<Product[]>(`${appEnv.apiUrl}/products/alerts`);
   }
 }
