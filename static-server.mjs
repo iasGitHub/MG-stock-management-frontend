@@ -51,7 +51,7 @@ createServer(async (req, res) => {
       data = await readFile(resolve(ROOT, 'index.html'));
       isSpaFallback = true;
     }
-    const headers = { 'Content-Type': MIME[ext] || 'application/octet-stream' };
+    const headers = { 'Content-Type': isSpaFallback ? MIME['.html'] : MIME[ext] || 'application/octet-stream' };
     if (ext === '.html' || pathname === '/env.js') {
       headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
     } else if (ext === '' || isSpaFallback) {
