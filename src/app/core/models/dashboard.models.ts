@@ -1,8 +1,8 @@
 export interface DashboardStats {
-  totalProduits: number;
-  produitsEnAlerte: number;
-  quantiteTotale: number;
-  valeurStock: number;
-  entreesDuMois: number;
-  sortiesDuMois: number;
+  totalProducts: number;
+  productsInAlert: number;
+  totalQuantity: number;
+  stockValue: number;
+  monthlyEntries: number;
+  monthlyExits: number;
 }

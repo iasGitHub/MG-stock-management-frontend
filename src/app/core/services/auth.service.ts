@@ -10,7 +10,7 @@ const USER_KEY = 'stock_user';
 interface StoredUser {
   id: number;
   username: string;
-  nomComplet: string;
+  fullName: string;
   role: Role;
 }
 
@@ -32,7 +32,7 @@ export class AuthService {
         const user: StoredUser = {
           id: response.id,
           username: response.username,
-          nomComplet: response.nomComplet,
+          fullName: response.fullName,
           role: response.role,
         };
         localStorage.setItem(USER_KEY, JSON.stringify(user));

@@ -20,26 +20,38 @@ export const routes: Routes = [
         title: 'Tableau de bord - Gestion de Stock',
       },
       {
-        path: 'produits',
-        loadComponent: () => import('./features/produits/produits').then((m) => m.Produits),
+        path: 'products',
+        loadComponent: () => import('./features/products/products').then((m) => m.Products),
         title: 'Produits - Gestion de Stock',
       },
       {
-        path: 'mouvements',
-        loadComponent: () => import('./features/mouvements/mouvements').then((m) => m.Mouvements),
+        path: 'products/:id',
+        loadComponent: () =>
+          import('./features/product-detail/product-detail').then((m) => m.ProductDetail),
+        title: 'Détail produit - Gestion de Stock',
+      },
+      {
+        path: 'movements',
+        loadComponent: () => import('./features/movements/movements').then((m) => m.Movements),
         title: 'Mouvements - Gestion de Stock',
       },
       {
-        path: 'fournisseurs',
+        path: 'suppliers',
         loadComponent: () =>
-          import('./features/fournisseurs/fournisseurs').then((m) => m.Fournisseurs),
+          import('./features/suppliers/suppliers').then((m) => m.Suppliers),
         title: 'Fournisseurs - Gestion de Stock',
       },
       {
-        path: 'utilisateurs',
+        path: 'categories',
+        loadComponent: () =>
+          import('./features/categories/categories').then((m) => m.Categories),
+        title: 'Catégories - Gestion de Stock',
+      },
+      {
+        path: 'users',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./features/utilisateurs/utilisateurs').then((m) => m.Utilisateurs),
+          import('./features/users/users').then((m) => m.Users),
         title: 'Utilisateurs - Gestion de Stock',
       },
     ],

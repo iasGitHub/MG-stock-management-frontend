@@ -1,11 +1,11 @@
-export type Role = 'ADMIN' | 'GESTIONNAIRE';
+export type Role = 'ADMIN' | 'MANAGEMENT';
 
 export interface AuthResponse {
   token: string;
   type: string;
   id: number;
   username: string;
-  nomComplet: string;
+  fullName: string;
   role: Role;
 }
 
@@ -14,18 +14,18 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface Utilisateur {
+export interface User {
   id: number;
   username: string;
-  nomComplet: string;
+  fullName: string;
   role: Role;
-  actif: boolean;
+  active: boolean;
 }
 
-export interface UtilisateurRequest {
+export interface UserRequest {
   username: string;
   password?: string;
-  nomComplet: string;
+  fullName: string;
   role: Role;
-  actif: boolean;
+  active: boolean;
 }

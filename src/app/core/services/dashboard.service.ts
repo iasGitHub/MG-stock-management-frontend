@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DashboardStats } from '../models/dashboard.models';
-import { Produit } from '../models/produit.models';
+import { Product } from '../models/product.models';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -14,7 +14,7 @@ export class DashboardService {
     return this.http.get<DashboardStats>(`${this.apiUrl}/stats`);
   }
 
-  getProduitsEnAlerte(): Observable<Produit[]> {
-    return this.http.get<Produit[]>(`/api/produits/alertes`);
+  getProductsInAlert(): Observable<Product[]> {
+    return this.http.get<Product[]>(`/api/products/alerts`);
   }
 }

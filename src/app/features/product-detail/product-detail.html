@@ -1,0 +1,116 @@
+<div class="page">
+  @if (loading()) {
+    <p class="loading">Chargement...</p>
+  } @else if (errorMessage(); as message) {
+    <div class="alert-error">{{ message }}</div>
+    <a routerLink="/products" class="back-link">← Retour aux produits</a>
+  } @else if (product(); as p) {
+    <div class="toolbar">
+      <div>
+        <a routerLink="/products" class="back-link">← Retour aux produits</a>
+        <h1>{{ p.name }}</h1>
+        <p>{{ p.reference }} · {{ p.category }}</p>
+      </div>
+    </div>
+
+    <div class="card product-info">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Référence</span>
+          <strong>{{ p.reference }}</strong>
+        </div>
+        <div class="info-item">
+          <span class="label">Catégorie</span>
+          <strong>{{ p.category }}</strong>
+        </div>
+        <div class="info-item">
+          <span class="label">Stock actuel</span>
+          <strong [class.danger]="p.inAlert">{{ p.stockQuantity }}</strong>
+        </div>
+        <div class="info-item">
+          <span class="label">Seuil minimum</span>
+          <strong>{{ p.minThreshold }}</strong>
+        </div>
+        <div class="info-item">
+          <span class="label">Prix unitaire</span>
+          <strong>{{ p.unitPrice | number: '1.0-0' }} MRU</strong>
+        </div>
+        @if (p.description) {
+          <div class="info-item full">
+            <span class="label">Description</span>
+            <span>{{ p.description }}</span>
+          </div>
+        }
+      </div>
+      @if (p.inAlert) {
+        <div class="alert-badge">⚠ Alerte stock</div>
+      }
+    </div>
+
+    <div class="section-header">
+      <h2>Mouvements</h2>
+      <p>{{ movements().length }} mouvement(s) trouvé(s)</p>
+    </div>
+
+    @if (movements().length === 0) {
+      <div class="card">
+        <p class="empty">Aucun mouvement enregistré pour ce produit.</p>
+      </div>
+    } @else {
+      <div class="card table-card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Quantité</th>
+              <th>Prix unitaire</th>
+              <th>Fournisseur / Destinataire</th>
+              <th>Motif</th>
+              <th>Utilisateur</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (m of movements(); track m.id) {
+              <tr>
+                <td>{{ m.movementDate | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  @if (m.type === 'IN') {
+                    <span class="badge badge-success">Entrée</span>
+                  } @else {
+                    <span class="badge badge-danger">Sortie</span>
+                  }
+                </td>
+                <td>
+                  @if (m.type === 'IN') {
+                    <strong class="qty-in">+{{ m.quantity }}</strong>
+                  } @else {
+                    <strong class="qty-out">-{{ m.quantity }}</strong>
+                  }
+                </td>
+                <td>{{ m.unitPrice | number: '1.0-0' }} MRU</td>
+                <td>
+                  @if (m.type === 'IN') {
+                    {{ m.supplierName || '—' }}
+                    @if (m.supplierNif) {
+                      <br /><small class="ref-ext">NIF: {{ m.supplierNif }}</small>
+                    }
+                  } @else {
+                    {{ m.recipient || '—' }}
+                  }
+                </td>
+                <td>
+                  @if (m.reason) { {{ m.reason }} }
+                  @if (m.externalReference) {
+                    <br /><small class="ref-ext">Réf. : {{ m.externalReference }}</small>
+                  }
+                </td>
+                <td>{{ m.userName }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

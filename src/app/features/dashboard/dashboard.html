@@ -13,7 +13,7 @@
       <div class="card stat-card">
         <span class="stat-icon primary">📦</span>
         <div>
-          <strong>{{ s.totalProduits }}</strong>
+          <strong>{{ s.totalProducts }}</strong>
           <small>Produits référencés</small>
         </div>
       </div>
@@ -21,15 +21,15 @@
       <div class="card stat-card">
         <span class="stat-icon quantity">🔢</span>
         <div>
-          <strong>{{ s.quantiteTotale }}</strong>
+          <strong>{{ s.totalQuantity }}</strong>
           <small>Quantité totale en stock</small>
         </div>
       </div>
 
-      <div class="card stat-card" [class.alert]="s.produitsEnAlerte > 0">
+      <div class="card stat-card" [class.alert]="s.productsInAlert > 0">
         <span class="stat-icon warning">⚠️</span>
         <div>
-          <strong>{{ s.produitsEnAlerte }}</strong>
+          <strong>{{ s.productsInAlert }}</strong>
           <small>Produits en alerte</small>
         </div>
       </div>
@@ -37,7 +37,7 @@
       <div class="card stat-card">
         <span class="stat-icon value">💰</span>
         <div>
-          <strong>{{ formatMontant(s.valeurStock) }}</strong>
+          <strong>{{ formatAmount(s.stockValue) }}</strong>
           <small>Valeur du stock (MRU)</small>
         </div>
       </div>
@@ -45,7 +45,7 @@
       <div class="card stat-card">
         <span class="stat-icon in">⬇️</span>
         <div>
-          <strong>{{ s.entreesDuMois }}</strong>
+          <strong>{{ s.monthlyEntries }}</strong>
           <small>Entrées ce mois-ci</small>
         </div>
       </div>
@@ -53,14 +53,14 @@
       <div class="card stat-card">
         <span class="stat-icon out">⬆️</span>
         <div>
-          <strong>{{ s.sortiesDuMois }}</strong>
+          <strong>{{ s.monthlyExits }}</strong>
           <small>Sorties ce mois-ci</small>
         </div>
       </div>
     </section>
   }
 
-  @if (!loading() && produitsEnAlerte().length > 0) {
+  @if (!loading() && productsInAlert().length > 0) {
     <section class="card alerts-section">
       <h2>🚨 Produits à réapprovisionner</h2>
       <table class="table">
@@ -75,17 +75,17 @@
           </tr>
         </thead>
         <tbody>
-          @for (produit of produitsEnAlerte(); track produit.id) {
+          @for (product of productsInAlert(); track product.id) {
             <tr>
-              <td><code>{{ produit.reference }}</code></td>
-              <td>{{ produit.nom }}</td>
-              <td>{{ produit.categorie }}</td>
+              <td><code>{{ product.reference }}</code></td>
+              <td>{{ product.name }}</td>
+              <td>{{ product.category }}</td>
               <td>
-                <span class="badge badge-danger">{{ produit.quantiteStock }}</span>
+                <span class="badge badge-danger">{{ product.stockQuantity }}</span>
               </td>
-              <td>{{ produit.seuilMin }}</td>
+              <td>{{ product.minThreshold }}</td>
               <td>
-                <a routerLink="/mouvements" class="link">Approvisionner →</a>
+                <a routerLink="/movements" class="link">Approvisionner →</a>
               </td>
             </tr>
           }

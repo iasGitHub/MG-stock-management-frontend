@@ -6,7 +6,7 @@
     </div>
 
     <div class="toolbar-actions">
-      <button class="btn btn-primary" (click)="ouvrirCreation()">+ Nouvel utilisateur</button>
+      <button class="btn btn-primary" (click)="openCreate()">+ Nouvel utilisateur</button>
     </div>
   </div>
 
@@ -17,7 +17,7 @@
   <div class="card table-card">
     @if (loading()) {
       <p class="loading">Chargement...</p>
-    } @else if (utilisateurs().length === 0) {
+    } @else if (users().length === 0) {
       <p class="empty">Aucun utilisateur.</p>
     } @else {
       <table class="table">
@@ -31,31 +31,31 @@
           </tr>
         </thead>
         <tbody>
-          @for (utilisateur of utilisateurs(); track utilisateur.id) {
-            <tr [class.inactive]="!utilisateur.actif">
-              <td><code>{{ utilisateur.username }}</code></td>
-              <td><strong>{{ utilisateur.nomComplet }}</strong></td>
+          @for (user of users(); track user.id) {
+            <tr [class.inactive]="!user.active">
+              <td><code>{{ user.username }}</code></td>
+              <td><strong>{{ user.fullName }}</strong></td>
               <td>
-                @if (utilisateur.role === 'ADMIN') {
+                @if (user.role === 'ADMIN') {
                   <span class="badge badge-primary">Administrateur</span>
                 } @else {
                   <span class="badge badge-warning">Gestionnaire</span>
                 }
               </td>
               <td>
-                @if (utilisateur.actif) {
+                @if (user.active) {
                   <span class="badge badge-success">Actif</span>
                 } @else {
                   <span class="badge badge-danger">Désactivé</span>
                 }
               </td>
               <td class="actions-cell">
-                <button class="btn btn-secondary btn-sm" (click)="ouvrirEdition(utilisateur)">Modifier</button>
-                <button class="btn btn-secondary btn-sm" (click)="toggleActif(utilisateur)">
-                  {{ utilisateur.actif ? 'Désactiver' : 'Activer' }}
+                <button class="btn btn-secondary btn-sm" (click)="openEdit(user)">Modifier</button>
+                <button class="btn btn-secondary btn-sm" (click)="toggleActive(user)">
+                  {{ user.active ? 'Désactiver' : 'Activer' }}
                 </button>
-                @if (utilisateur.id !== auth.currentUser()?.id) {
-                  <button class="btn btn-danger btn-sm" (click)="confirmerSuppression(utilisateur)">Supprimer</button>
+                @if (user.id !== auth.currentUser()?.id) {
+                  <button class="btn btn-danger btn-sm" (click)="confirmDelete(user)">Supprimer</button>
                 }
               </td>
             </tr>
@@ -66,19 +66,19 @@
   </div>
 </div>
 
-@if (modalOuvert()) {
-  <div class="modal-backdrop" (click)="fermerModal()">
+@if (modalOpen()) {
+  <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ utilisateurEnEdition() ? "Modifier l'utilisateur" : 'Nouvel utilisateur' }}</h3>
-        <button class="close" type="button" (click)="fermerModal()">×</button>
+        <h3>{{ userInEdit() ? "Modifier l'utilisateur" : 'Nouvel utilisateur' }}</h3>
+        <button class="close" type="button" (click)="closeModal()">×</button>
       </div>
 
       @if (errorMessage(); as message) {
         <div class="alert-error modal-error">{{ message }}</div>
       }
 
-      <form [formGroup]="form" (ngSubmit)="enregistrer()">
+      <form [formGroup]="form" (ngSubmit)="save()">
         <div class="form-group">
           <label>Nom d'utilisateur *</label>
           <input type="text" formControlName="username" placeholder="Ex : jdupont" />
@@ -89,8 +89,8 @@
 
         <div class="form-group">
           <label>Nom complet *</label>
-          <input type="text" formControlName="nomComplet" placeholder="Ex : Jean Dupont" />
-          @if (form.controls.nomComplet.touched && form.controls.nomComplet.invalid) {
+          <input type="text" formControlName="fullName" placeholder="Ex : Jean Dupont" />
+          @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
             <span class="error">Le nom complet est obligatoire</span>
           }
         </div>
@@ -99,14 +99,14 @@
           <div class="form-group">
             <label>Rôle *</label>
             <select formControlName="role">
-              <option value="GESTIONNAIRE">Gestionnaire de stock</option>
+              <option value="MANAGEMENT">Gestionnaire de stock</option>
               <option value="ADMIN">Administrateur</option>
             </select>
           </div>
 
           <div class="form-group">
             <label>
-              Mot de passe {{ utilisateurEnEdition() ? '(laisser vide pour conserver)' : '*' }}
+              Mot de passe {{ userInEdit() ? '(laisser vide pour conserver)' : '*' }}
             </label>
             <input
               type="password"
@@ -114,7 +114,7 @@
               autocomplete="new-password"
               placeholder="6 caractères minimum"
             />
-            @if (!utilisateurEnEdition() && form.controls.password.touched && form.controls.password.invalid) {
+            @if (!userInEdit() && form.controls.password.touched && form.controls.password.invalid) {
               <span class="error">Au moins 6 caractères requis</span>
             }
           </div>
@@ -122,7 +122,7 @@
 
         <div class="checkbox-group">
           <label class="switch-label">
-            <input type="checkbox" formControlName="actif" />
+            <input type="checkbox" formControlName="active" />
             Compte actif
           </label>
         </div>
@@ -133,9 +133,9 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="fermerModal()">Annuler</button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
           <button type="submit" class="btn btn-primary">
-            {{ utilisateurEnEdition() ? 'Enregistrer' : 'Créer le compte' }}
+            {{ userInEdit() ? 'Enregistrer' : 'Créer le compte' }}
           </button>
         </div>
       </form>
@@ -143,20 +143,20 @@
   </div>
 }
 
-@if (suppressionEnCours(); as utilisateur) {
-  <div class="modal-backdrop" (click)="suppressionEnCours.set(null)">
+@if (deleteInProgress(); as user) {
+  <div class="modal-backdrop" (click)="deleteInProgress.set(null)">
     <div class="modal small" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Confirmer la suppression</h3>
-        <button class="close" type="button" (click)="suppressionEnCours.set(null)">×</button>
+        <button class="close" type="button" (click)="deleteInProgress.set(null)">×</button>
       </div>
       <div class="confirm-body">
         Voulez-vous vraiment supprimer le compte
-        <strong>« {{ utilisateur.username }} »</strong> ?
+        <strong>« {{ user.username }} »</strong> ?
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="suppressionEnCours.set(null)">Annuler</button>
-        <button class="btn btn-danger delete-btn" (click)="supprimer()">Supprimer définitivement</button>
+        <button class="btn btn-secondary" (click)="deleteInProgress.set(null)">Annuler</button>
+        <button class="btn btn-danger delete-btn" (click)="delete()">Supprimer définitivement</button>
       </div>
     </div>
   </div>

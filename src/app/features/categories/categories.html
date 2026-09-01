@@ -1,0 +1,114 @@
+<div class="page">
+  <div class="toolbar">
+    <div>
+      <h1>Catégories</h1>
+      <p>{{ totalElements() }} catégorie(s) référencée(s)</p>
+    </div>
+
+    <div class="toolbar-actions">
+      <input
+        type="search"
+        placeholder="Rechercher une catégorie..."
+        [value]="search()"
+        (input)="onSearch($event)"
+      />
+      <button class="btn btn-primary" (click)="openCreate()">+ Nouvelle catégorie</button>
+    </div>
+  </div>
+
+  @if (errorMessage(); as message) {
+    <div class="alert-error">{{ message }}</div>
+  }
+
+  <div class="card table-card">
+    @if (loading()) {
+      <p class="loading">Chargement...</p>
+    } @else if (categories().length === 0) {
+      <p class="empty">Aucune catégorie trouvée. Créez votre première catégorie !</p>
+    } @else {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of categories(); track category.id) {
+            <tr>
+              <td><strong>{{ category.name }}</strong></td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn btn-secondary btn-sm" (click)="openEdit(category)">Modifier</button>
+                  @if (canDelete()) {
+                    <button class="btn btn-danger btn-sm delete-btn" (click)="confirmDelete(category)">Supprimer</button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>
+        <div class="actions">
+          <button [disabled]="page() === 0" (click)="goToPage(page() - 1)">‹ Précédent</button>
+          <button [disabled]="page() >= totalPages() - 1" (click)="goToPage(page() + 1)">Suivant ›</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (modalOpen()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ categoryInEdit() ? "Modifier la catégorie" : 'Nouvelle catégorie' }}</h3>
+        <button class="close" type="button" (click)="closeModal()">×</button>
+      </div>
+
+      @if (errorMessage(); as message) {
+        <div class="alert-error modal-error">{{ message }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-group">
+          <label>Nom de la catégorie *</label>
+          <input type="text" formControlName="name" placeholder="Ex : Informatique, Fournitures..." />
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <span class="error">Nom obligatoire (max 50 caractères)</span>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+          <button type="submit" class="btn btn-primary">
+            {{ categoryInEdit() ? 'Enregistrer' : 'Créer la catégorie' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (deleteInProgress(); as category) {
+  <div class="modal-backdrop" (click)="deleteInProgress.set(null)">
+    <div class="modal small" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirmer la suppression</h3>
+        <button class="close" type="button" (click)="deleteInProgress.set(null)">×</button>
+      </div>
+      <div class="confirm-body">
+        Voulez-vous vraiment supprimer la catégorie
+        <strong>« {{ category.name }} »</strong> ?
+        Cette action est irréversible.
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="deleteInProgress.set(null)">Annuler</button>
+        <button class="btn btn-danger delete-btn" (click)="delete()">Supprimer définitivement</button>
+      </div>
+    </div>
+  </div>
+}

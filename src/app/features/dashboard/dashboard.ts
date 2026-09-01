@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { DashboardStats } from '../../core/models/dashboard.models';
-import { Produit } from '../../core/models/produit.models';
+import { Product } from '../../core/models/product.models';
 
 @Component({
   imports: [CommonModule, RouterLink],
@@ -15,20 +15,20 @@ export class Dashboard implements OnInit {
   private readonly dashboardService = inject(DashboardService);
 
   readonly stats = signal<DashboardStats | null>(null);
-  readonly produitsEnAlerte = signal<Produit[]>([]);
+  readonly productsInAlert = signal<Product[]>([]);
   readonly loading = signal(true);
 
   ngOnInit(): void {
     this.dashboardService.getStats().subscribe((stats) => this.stats.set(stats));
     this.dashboardService
-      .getProduitsEnAlerte()
-      .subscribe((produits) => {
-        this.produitsEnAlerte.set(produits);
+      .getProductsInAlert()
+      .subscribe((products) => {
+        this.productsInAlert.set(products);
         this.loading.set(false);
       });
   }
 
-  formatMontant(valeur: number): string {
-    return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(valeur);
+  formatAmount(value: number): string {
+    return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(value);
   }
 }
