@@ -30,6 +30,8 @@ export class Suppliers implements OnInit {
   readonly supplierInEdit = signal<Supplier | null>(null);
   readonly deleteInProgress = signal<Supplier | null>(null);
   readonly errorMessage = signal<string | null>(null);
+  readonly importMessage = signal<string | null>(null);
+  readonly importing = signal(false);
 
   readonly canDelete = computed(() => this.auth.isAdmin());
 
@@ -155,6 +157,42 @@ export class Suppliers implements OnInit {
         this.errorMessage.set(err?.error?.message ?? 'Error while deleting.');
         this.deleteInProgress.set(null);
       },
+    });
+  }
+
+  onImportFile(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.importing.set(true);
+    this.importMessage.set(null);
+    this.errorMessage.set(null);
+
+    this.supplierService.importExcel(file).subscribe({
+      next: (res) => {
+        this.importing.set(false);
+        (event.target as HTMLInputElement).value = '';
+        this.importMessage.set(
+          `${res.created} fournisseur(s) créé(s), ${res.skipped} ignoré(s) (total ${res.total}).`
+        );
+        this.load();
+      },
+      error: (err) => {
+        this.importing.set(false);
+        (event.target as HTMLInputElement).value = '';
+        this.errorMessage.set(err?.error?.message ?? 'Erreur lors de l\'import.');
+      },
+    });
+  }
+
+  downloadTemplate(): void {
+    this.supplierService.exportTemplate().subscribe((blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'modele_fournisseurs.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
     });
   }
 }

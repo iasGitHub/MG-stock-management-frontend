@@ -6,6 +6,9 @@
     </div>
 
     <div class="toolbar-actions">
+      <button class="btn btn-secondary" (click)="exportExcel()" [disabled]="exporting()">
+        {{ exporting() ? 'Export...' : '📥 Exporter Excel' }}
+      </button>
       <button class="btn btn-success" (click)="openModal('IN')">⬇ Nouvelle entrée</button>
       <button class="btn btn-danger sortie-btn" (click)="openModal('OUT')">⬆ Nouvelle sortie</button>
     </div>

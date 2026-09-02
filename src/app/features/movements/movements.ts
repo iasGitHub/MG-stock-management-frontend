@@ -35,6 +35,7 @@ export class Movements implements OnInit {
   readonly modalOpen = signal(false);
   readonly selectedType = signal<MovementType>('IN');
   readonly errorMessage = signal<string | null>(null);
+  readonly exporting = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     productId: [null as number | null, Validators.required],
@@ -152,6 +153,25 @@ export class Movements implements OnInit {
       },
       error: (err) => {
         this.errorMessage.set(err?.error?.message ?? 'Error while saving the movement.');
+      },
+    });
+  }
+
+  exportExcel(): void {
+    this.exporting.set(true);
+    this.movementService.exportExcel(this.filterProductId() ?? undefined, this.filterType() ?? undefined).subscribe({
+      next: (blob) => {
+        this.exporting.set(false);
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mouvements_stock_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.exporting.set(false);
+        this.errorMessage.set('Erreur lors de l\'export Excel.');
       },
     });
   }

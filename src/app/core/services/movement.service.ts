@@ -21,4 +21,14 @@ export class MovementService {
   record(request: StockMovementRequest): Observable<StockMovement> {
     return this.http.post<StockMovement>(this.apiUrl, request);
   }
+
+  exportExcel(productId?: number, type?: MovementType): Observable<Blob> {
+    let params = new HttpParams();
+    if (productId != null) params = params.set('productId', productId);
+    if (type) params = params.set('type', type);
+    return this.http.get(`${this.apiUrl}/export`, {
+      params,
+      responseType: 'blob',
+    });
+  }
 }

@@ -12,12 +12,28 @@
         [value]="search()"
         (input)="onSearch($event)"
       />
+      <input
+        #fileInput
+        type="file"
+        accept=".xlsx"
+        class="hidden-file"
+        (change)="onImportFile($event)"
+      />
+      <button
+        class="btn btn-secondary"
+        (click)="fileInput.click()"
+        [disabled]="importing()"
+      >📥 Importer Excel</button>
+      <button class="btn btn-outline-primary" (click)="downloadTemplate()">⬇ Modèle</button>
       <button class="btn btn-primary" (click)="openCreate()">+ Nouveau fournisseur</button>
     </div>
   </div>
 
   @if (errorMessage(); as message) {
     <div class="alert-error">{{ message }}</div>
+  }
+  @if (importMessage(); as message) {
+    <div class="alert-success import-success">{{ message }}</div>
   }
 
   <div class="card table-card">

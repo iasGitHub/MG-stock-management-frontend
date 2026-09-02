@@ -9,6 +9,31 @@
   }
 }
 
+.hidden-file {
+  display: none;
+}
+
+.import-success {
+  background: var(--success-bg);
+  color: var(--success);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.btn-outline-primary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+
+  &:hover:not(:disabled) {
+    background: var(--primary);
+    color: #fff;
+  }
+}
+
 .actions-cell {
   display: flex;
   gap: 8px;
