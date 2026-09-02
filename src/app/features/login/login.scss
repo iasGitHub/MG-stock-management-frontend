@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+  background: #ffffff;
   padding: 20px;
 }
 
@@ -22,7 +22,7 @@
     width: 56px;
     height: 56px;
     border-radius: 14px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: var(--primary);
     color: #fff;
     font-weight: 800;
     font-size: 20px;

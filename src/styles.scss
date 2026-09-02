@@ -1,7 +1,7 @@
 :root {
-  --primary: #4f46e5;
-  --primary-dark: #4338ca;
-  --primary-light: #eef2ff;
+  --primary: #09514B;
+  --primary-dark: #073e39;
+  --primary-light: #e6f0ef;
   --success: #16a34a;
   --success-bg: #f0fdf4;
   --danger: #dc2626;
@@ -165,7 +165,7 @@ textarea {
 
     &:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+      box-shadow: 0 0 0 3px rgba(9, 81, 75, 0.12);
     }
 
     &.ng-invalid.ng-touched {
