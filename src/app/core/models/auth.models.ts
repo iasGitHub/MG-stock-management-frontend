@@ -7,11 +7,17 @@ export interface AuthResponse {
   username: string;
   fullName: string;
   role: Role;
+  mustChangePassword: boolean;
 }
 
 export interface LoginRequest {
   username: string;
   password: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface User {

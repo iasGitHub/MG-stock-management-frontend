@@ -6,11 +6,11 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   imports: [ReactiveFormsModule],
-  selector: 'app-login',
-  templateUrl: './login.html',
-  styleUrl: './login.scss',
+  selector: 'app-change-password',
+  templateUrl: './change-password.html',
+  styleUrl: './change-password.scss',
 })
-export class Login {
+export class ChangePassword {
   private readonly fb = new FormBuilder();
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -19,30 +19,35 @@ export class Login {
   readonly errorMessage = signal<string | null>(null);
 
   readonly form = this.fb.nonNullable.group({
-    username: ['', [Validators.required]],
-    password: ['', [Validators.required]],
+    currentPassword: ['', [Validators.required]],
+    newPassword: ['', [Validators.required, Validators.minLength(6)]],
+    confirmPassword: ['', [Validators.required]],
   });
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading()) {
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
+      return;
+    }
+
+    const { currentPassword, newPassword, confirmPassword } = this.form.getRawValue();
+    if (newPassword !== confirmPassword) {
+      this.errorMessage.set('Les nouveaux mots de passe ne correspondent pas.');
       return;
     }
 
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    this.authService.login(this.form.getRawValue())
+    this.authService
+      .changePassword({ currentPassword, newPassword })
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: () =>
-          this.router.navigate([
-            this.authService.mustChangePassword() ? '/change-password' : '/dashboard',
-          ]),
+        next: () => this.router.navigate(['/dashboard']),
         error: (err) => {
           const message = err?.error?.message;
           this.errorMessage.set(
-            typeof message === 'string' ? message : 'Échec de la connexion. Vérifiez vos identifiants.'
+            typeof message === 'string' ? message : 'Échec du changement de mot de passe.'
           );
         },
       });

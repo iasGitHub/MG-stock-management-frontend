@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, adminGuard } from './core/guards/auth.guard';
+import { authGuard, guestGuard, adminGuard, passwordChangeGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
@@ -10,8 +10,15 @@ export const routes: Routes = [
     title: 'Connexion - Gestion de Stock',
   },
   {
-    path: '',
+    path: 'change-password',
     canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/change-password/change-password').then((m) => m.ChangePassword),
+    title: 'Changer le mot de passe - Gestion de Stock',
+  },
+  {
+    path: '',
+    canActivate: [authGuard, passwordChangeGuard],
     loadComponent: () => import('./layout/shell/shell').then((m) => m.Shell),
     children: [
       {

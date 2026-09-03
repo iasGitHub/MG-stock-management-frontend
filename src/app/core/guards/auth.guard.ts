@@ -27,7 +27,17 @@ export const guestGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (auth.isLoggedIn()) {
-    return router.createUrlTree(['/dashboard']);
+    return router.createUrlTree([auth.mustChangePassword() ? '/change-password' : '/dashboard']);
+  }
+  return true;
+};
+
+export const passwordChangeGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isLoggedIn() && auth.mustChangePassword()) {
+    return router.createUrlTree(['/change-password']);
   }
   return true;
 };

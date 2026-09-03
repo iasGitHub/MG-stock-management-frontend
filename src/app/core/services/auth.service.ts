@@ -2,7 +2,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginRequest, Role } from '../models/auth.models';
+import { AuthResponse, ChangePasswordRequest, LoginRequest, Role } from '../models/auth.models';
 import { appEnv } from '../config/env';
 
 const TOKEN_KEY = 'stock_token';
@@ -13,6 +13,7 @@ interface StoredUser {
   username: string;
   fullName: string;
   role: Role;
+  mustChangePassword: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,6 +24,7 @@ export class AuthService {
   readonly currentUser = this.userSignal.asReadonly();
   readonly isLoggedIn = computed(() => !!this.userSignal() && !!this.token());
   readonly isAdmin = computed(() => this.userSignal()?.role === 'ADMIN');
+  readonly mustChangePassword = computed(() => this.userSignal()?.mustChangePassword ?? false);
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -35,11 +37,26 @@ export class AuthService {
           username: response.username,
           fullName: response.fullName,
           role: response.role,
+          mustChangePassword: response.mustChangePassword,
         };
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         this.userSignal.set(user);
       })
     );
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/change-password`, request).pipe(
+      tap(() => this.setMustChangePassword(false))
+    );
+  }
+
+  setMustChangePassword(value: boolean): void {
+    const current = this.userSignal();
+    if (!current) return;
+    const updated: StoredUser = { ...current, mustChangePassword: value };
+    localStorage.setItem(USER_KEY, JSON.stringify(updated));
+    this.userSignal.set(updated);
   }
 
   logout(): void {
