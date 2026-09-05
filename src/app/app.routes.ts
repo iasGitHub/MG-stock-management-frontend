@@ -55,12 +55,6 @@ export const routes: Routes = [
         title: 'Catégories - Gestion de Stock',
       },
       {
-        path: 'invoice-import',
-        loadComponent: () =>
-          import('./features/invoice-import/invoice-import').then((m) => m.InvoiceImport),
-        title: 'Import factures PDF - Gestion de Stock',
-      },
-      {
         path: 'users',
         canActivate: [adminGuard],
         loadComponent: () =>
