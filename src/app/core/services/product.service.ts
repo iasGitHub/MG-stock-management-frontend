@@ -39,4 +39,18 @@ export class ProductService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  importExcel(file: File): Observable<{ created: number; skipped: number; total: number }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ created: number; skipped: number; total: number }>(
+      `${this.apiUrl}/import`, formData
+    );
+  }
+
+  exportTemplate(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/export/template`, {
+      responseType: 'blob',
+    });
+  }
 }

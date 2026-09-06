@@ -34,6 +34,8 @@ export class Products implements OnInit {
   readonly productInEdit = signal<Product | null>(null);
   readonly deleteInProgress = signal<Product | null>(null);
   readonly errorMessage = signal<string | null>(null);
+  readonly importMessage = signal<string | null>(null);
+  readonly importing = signal(false);
 
   readonly canManage = computed(() => true);
   readonly canDelete = computed(() => this.auth.isAdmin());
@@ -162,6 +164,42 @@ export class Products implements OnInit {
 
   confirmDelete(product: Product): void {
     this.deleteInProgress.set(product);
+  }
+
+  onImportFile(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.importing.set(true);
+    this.importMessage.set(null);
+    this.errorMessage.set(null);
+
+    this.productService.importExcel(file).subscribe({
+      next: (res) => {
+        this.importing.set(false);
+        (event.target as HTMLInputElement).value = '';
+        this.importMessage.set(
+          `${res.created} produit(s) créé(s), ${res.skipped} ignoré(s) (total ${res.total}).`
+        );
+        this.load();
+      },
+      error: (err) => {
+        this.importing.set(false);
+        (event.target as HTMLInputElement).value = '';
+        this.errorMessage.set(err?.error?.message ?? 'Erreur lors de l\'import.');
+      },
+    });
+  }
+
+  downloadTemplate(): void {
+    this.productService.exportTemplate().subscribe((blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'modele_produits.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
   }
 
   delete(): void {
