@@ -95,6 +95,45 @@
   border-top: 3px solid var(--danger);
 }
 
+.modal-header.header-cancel {
+  border-top: 3px solid var(--warning);
+}
+
+.badge-correction {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--warning-bg);
+  color: var(--warning);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.col-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.btn-cancel {
+  color: var(--warning);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 3px 6px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.cancel-summary {
+  margin: 16px 22px 0;
+  font-size: 13.5px;
+  color: var(--gray-600);
+  line-height: 1.55;
+}
+
 .stock-info {
   margin: -4px 0 14px;
   padding: 9px 13px;

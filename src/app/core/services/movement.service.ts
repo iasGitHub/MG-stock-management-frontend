@@ -22,6 +22,10 @@ export class MovementService {
     return this.http.post<StockMovement>(this.apiUrl, request);
   }
 
+  cancel(id: number, reason?: string): Observable<StockMovement> {
+    return this.http.post<StockMovement>(`${this.apiUrl}/${id}/cancel`, reason ? { reason } : {});
+  }
+
   exportExcel(productId?: number, type?: MovementType): Observable<Blob> {
     let params = new HttpParams();
     if (productId != null) params = params.set('productId', productId);

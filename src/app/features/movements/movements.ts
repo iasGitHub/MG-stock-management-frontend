@@ -37,6 +37,11 @@ export class Movements implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly exporting = signal(false);
 
+  readonly cancelTarget = signal<StockMovement | null>(null);
+  readonly cancelReason = this.fb.control<string>('', { nonNullable: true });
+  readonly canceling = signal(false);
+  readonly cancelError = signal<string | null>(null);
+
   readonly form = this.fb.nonNullable.group({
     productId: [null as number | null, Validators.required],
     quantity: [1, [Validators.required, Validators.min(1)]],
@@ -172,6 +177,41 @@ export class Movements implements OnInit {
       error: () => {
         this.exporting.set(false);
         this.errorMessage.set('Erreur lors de l\'export Excel.');
+      },
+    });
+  }
+
+  canCancel(movement: StockMovement): boolean {
+    return !movement.reversesId;
+  }
+
+  openCancelModal(movement: StockMovement): void {
+    this.cancelTarget.set(movement);
+    this.cancelReason.reset('');
+    this.cancelError.set(null);
+  }
+
+  closeCancelModal(): void {
+    this.cancelTarget.set(null);
+    this.cancelError.set(null);
+  }
+
+  confirmCancel(): void {
+    const target = this.cancelTarget();
+    if (!target) return;
+
+    this.canceling.set(true);
+    this.cancelError.set(null);
+    const reason = this.cancelReason.value.trim() || undefined;
+    this.movementService.cancel(target.id, reason).subscribe({
+      next: () => {
+        this.canceling.set(false);
+        this.closeCancelModal();
+        this.load();
+      },
+      error: (err) => {
+        this.canceling.set(false);
+        this.cancelError.set(err?.error?.message ?? 'Impossible d\'annuler ce mouvement.');
       },
     });
   }

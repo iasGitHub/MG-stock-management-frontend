@@ -67,6 +67,7 @@
               <th>Motif / Référence</th>
               <th>Fournisseur / Destinataire</th>
               <th>Utilisateur</th>
+              <th class="col-actions">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -78,6 +79,10 @@
                     <span class="badge badge-success">Entrée</span>
                   } @else {
                     <span class="badge badge-danger">Sortie</span>
+                  }
+                  @if (movement.reversesId) {
+                    <br />
+                    <span class="badge badge-correction">↩ Correction de #{{ movement.reversesId }}</span>
                   }
                 </td>
                 <td>
@@ -107,6 +112,11 @@
                   }
                 </td>
                 <td>{{ movement.userName }}</td>
+                <td class="col-actions">
+                  @if (canCancel(movement)) {
+                    <button class="btn btn-cancel" (click)="openCancelModal(movement)">↩ Annuler</button>
+                  }
+                </td>
               </tr>
             }
           </tbody>
@@ -235,6 +245,50 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+}
+
+@if (cancelTarget(); as target) {
+  <div class="modal-backdrop" (click)="closeCancelModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header header-cancel">
+        <h3>↩ Annuler le mouvement #{{ target.id }}</h3>
+        <button class="close" type="button" (click)="closeCancelModal()">×</button>
+      </div>
+
+      <p class="cancel-summary">
+        Un mouvement inverse (
+        <strong>{{ target.type === 'IN' ? 'sortie' : 'entrée' }}</strong>, quantité
+        <strong>{{ target.quantity }}</strong>
+        ) sera enregistré pour {{ target.productName }}. Le mouvement d'origine reste conservé pour l'audit.
+      </p>
+
+      @if (cancelError(); as message) {
+        <div class="alert-error modal-error">{{ message }}</div>
+      }
+
+      <div class="form-group">
+        <label>Motif de l'annulation</label>
+        <input
+          #reasonInput
+          type="text"
+          [formControl]="cancelReason"
+          placeholder="Ex : Erreur de saisie, retour marchandise..."
+        />
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCancelModal()">Fermer</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          [disabled]="canceling()"
+          (click)="confirmCancel()"
+        >
+          {{ canceling() ? 'Annulation...' : 'Confirmer l\'annulation' }}
+        </button>
+      </div>
     </div>
   </div>
 }

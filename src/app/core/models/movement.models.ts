@@ -15,6 +15,7 @@ export interface StockMovement {
   recipient?: string;
   unitPrice: number;
   userName: string;
+  reversesId?: number;
   movementDate: string;
 }
 
