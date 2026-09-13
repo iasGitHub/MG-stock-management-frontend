@@ -19,7 +19,6 @@ export interface ProductRequest {
   category: string;
   minThreshold: number;
   unitPrice: number;
-  initialQuantity?: number;
 }
 
 export interface PageResponse<T> {

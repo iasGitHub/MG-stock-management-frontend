@@ -47,7 +47,6 @@ export class Products implements OnInit {
     category: ['', [Validators.required]],
     minThreshold: [5, [Validators.required, Validators.min(0)]],
     unitPrice: [null as number | null, [Validators.required, Validators.min(0.01)]],
-    initialQuantity: [0, [Validators.min(0)]],
   });
 
   ngOnInit(): void {
@@ -91,7 +90,6 @@ export class Products implements OnInit {
       category: '',
       minThreshold: 5,
       unitPrice: null,
-      initialQuantity: 0,
     });
     this.form.controls.reference.disable();
 
@@ -137,7 +135,6 @@ export class Products implements OnInit {
       category: value.category,
       minThreshold: value.minThreshold,
       unitPrice: value.unitPrice!,
-      initialQuantity: this.productInEdit() ? undefined : value.initialQuantity,
     };
 
     const call = this.productInEdit()
@@ -179,7 +176,7 @@ export class Products implements OnInit {
         this.importing.set(false);
         (event.target as HTMLInputElement).value = '';
         this.importMessage.set(
-          `${res.created} produit(s) créé(s), ${res.skipped} ignoré(s) (total ${res.total}).`
+          `${res.created} produit(s) créé(s), ${res.skipped} ignoré(s) (total ${res.total}). Le stock initial est enregistré comme entrée « Import initial ».`
         );
         this.load();
       },
