@@ -68,7 +68,7 @@ export class Products implements OnInit {
           this.totalElements.set(response.totalElements);
           this.totalPages.set(response.totalPages);
         },
-        error: () => this.errorMessage.set('Unable to load products.'),
+        error: () => this.errorMessage.set('Impossible de charger les produits.'),
       });
   }
 
@@ -151,7 +151,7 @@ export class Products implements OnInit {
         this.load();
       },
       error: (err) => {
-        this.errorMessage.set(apiErrorMessage(err, 'Error while saving.'));
+        this.errorMessage.set(apiErrorMessage(err, "Erreur lors de l'enregistrement."));
       },
     });
   }
@@ -207,7 +207,7 @@ export class Products implements OnInit {
           this.load();
         },
         error: (err) => {
-          this.errorMessage.set(apiErrorMessage(err, 'Error while deleting.'));
+          this.errorMessage.set(apiErrorMessage(err, 'Erreur lors de la suppression.'));
           this.deleteInProgress.set(null);
         },
       });

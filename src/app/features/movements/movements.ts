@@ -72,7 +72,7 @@ export class Movements implements OnInit {
           this.totalElements.set(response.totalElements);
           this.totalPages.set(response.totalPages);
         },
-        error: () => this.errorMessage.set('Unable to load movements.'),
+        error: () => this.errorMessage.set('Impossible de charger les mouvements.'),
       });
   }
 
@@ -163,7 +163,7 @@ export class Movements implements OnInit {
           this.load();
         },
         error: (err) =>
-          this.errorMessage.set(apiErrorMessage(err, 'Error while saving the movement.')),
+          this.errorMessage.set(apiErrorMessage(err, "Erreur lors de l'enregistrement du mouvement.")),
       });
   }
 

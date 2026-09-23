@@ -47,7 +47,7 @@ export class Users implements OnInit {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (list) => this.users.set(list),
-        error: () => this.errorMessage.set('Unable to load users.'),
+        error: () => this.errorMessage.set('Impossible de charger les utilisateurs.'),
       });
   }
 
@@ -109,7 +109,7 @@ export class Users implements OnInit {
         this.load();
       },
       error: (err) => {
-        this.errorMessage.set(apiErrorMessage(err, 'Error while saving.'));
+        this.errorMessage.set(apiErrorMessage(err, "Erreur lors de l'enregistrement."));
       },
     });
   }
@@ -132,7 +132,7 @@ export class Users implements OnInit {
           this.load();
         },
         error: (err) => {
-          this.errorMessage.set(apiErrorMessage(err, 'Error while deleting.'));
+          this.errorMessage.set(apiErrorMessage(err, 'Erreur lors de la suppression.'));
           this.deleteInProgress.set(null);
         },
       });

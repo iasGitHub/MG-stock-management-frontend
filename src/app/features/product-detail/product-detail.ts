@@ -26,7 +26,7 @@ export class ProductDetail implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!id) {
-      this.errorMessage.set('Invalid product ID.');
+      this.errorMessage.set('Identifiant de produit invalide.');
       this.loading.set(false);
       return;
     }
@@ -37,7 +37,7 @@ export class ProductDetail implements OnInit {
         this.loadMovements(id);
       },
       error: () => {
-        this.errorMessage.set('Product not found.');
+        this.errorMessage.set('Produit introuvable.');
         this.loading.set(false);
       },
     });
@@ -50,7 +50,7 @@ export class ProductDetail implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.errorMessage.set('Error while loading movements.');
+        this.errorMessage.set('Impossible de charger les mouvements.');
         this.loading.set(false);
       },
     });

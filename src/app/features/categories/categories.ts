@@ -55,7 +55,7 @@ export class Categories implements OnInit {
           this.totalElements.set(response.totalElements);
           this.totalPages.set(response.totalPages);
         },
-        error: (err) => this.errorMessage.set(apiErrorMessage(err, 'Unable to load categories.')),
+        error: (err) => this.errorMessage.set(apiErrorMessage(err, 'Impossible de charger les catégories.')),
       });
   }
 
@@ -108,7 +108,7 @@ export class Categories implements OnInit {
         this.load();
       },
       error: (err) => {
-        this.errorMessage.set(apiErrorMessage(err, 'Error while saving.'));
+        this.errorMessage.set(apiErrorMessage(err, "Erreur lors de l'enregistrement."));
       },
     });
   }
@@ -131,7 +131,7 @@ export class Categories implements OnInit {
           this.load();
         },
         error: (err) => {
-          this.errorMessage.set(apiErrorMessage(err, 'Error while deleting.'));
+          this.errorMessage.set(apiErrorMessage(err, 'Erreur lors de la suppression.'));
           this.deleteInProgress.set(null);
         },
       });

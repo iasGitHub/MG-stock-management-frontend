@@ -1,5 +1,10 @@
 # StockManagementFrontend
 
+Ce projet consomme l'API documentée dans
+[`stock-management-backend/docs/api-contract.md`](https://github.com/iasGitHub/stock-management-backend/blob/master/docs/api-contract.md)
+(enveloppes d'erreur, `PageResponse`, codes HTTP, endpoints). Toute évolution de
+l'API ou du FE doit être répercutée dans ce contrat **et** dans le dépôt concerné.
+
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.5.
 
 ## Development server
