@@ -16,6 +16,6 @@ export class DashboardService {
   }
 
   getProductsInAlert(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${appEnv.apiUrl}/products/alerts`);
+    return this.http.get<Product[]>(`${this.apiUrl}/alerts`);
   }
 }

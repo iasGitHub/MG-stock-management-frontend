@@ -6,8 +6,8 @@ import { MovementService } from '../../core/services/movement.service';
 import { ProductService } from '../../core/services/product.service';
 import { SupplierService } from '../../core/services/supplier.service';
 import { StockMovementRequest, StockMovement, MovementType } from '../../core/models/movement.models';
-import { Product } from '../../core/models/product.models';
-import { Supplier } from '../../core/models/supplier.models';
+import { ProductLite } from '../../core/models/product.models';
+import { SupplierLite } from '../../core/models/supplier.models';
 import { apiErrorMessage } from '../../core/http/api-error';
 import { downloadBlob } from '../../core/http/download';
 
@@ -24,8 +24,8 @@ export class Movements implements OnInit {
   private readonly fb = new FormBuilder();
 
   readonly movements = signal<StockMovement[]>([]);
-  readonly products = signal<Product[]>([]);
-  readonly suppliers = signal<Supplier[]>([]);
+  readonly products = signal<ProductLite[]>([]);
+  readonly suppliers = signal<SupplierLite[]>([]);
   readonly totalElements = signal(0);
   readonly page = signal(0);
   readonly totalPages = signal(0);
@@ -57,8 +57,15 @@ export class Movements implements OnInit {
 
   ngOnInit(): void {
     this.load();
-    this.productService.findAll('', 0, 500).subscribe((response) => this.products.set(response.content));
-    this.supplierService.findAll('', 0, 500).subscribe((response) => this.suppliers.set(response.content));
+    // Listes déroulantes via les endpoints lite (pas de pagination, payload réduit).
+    this.productService.findLite().subscribe({
+      next: (list) => this.products.set(list),
+      error: () => this.errorMessage.set('Impossible de charger les produits.'),
+    });
+    this.supplierService.findLite().subscribe({
+      next: (list) => this.suppliers.set(list),
+      error: () => this.errorMessage.set('Impossible de charger les fournisseurs.'),
+    });
   }
 
   load(): void {
@@ -126,7 +133,7 @@ export class Movements implements OnInit {
     this.errorMessage.set(null);
   }
 
-  selectedProduct(): Product | undefined {
+  selectedProduct(): ProductLite | undefined {
     const id = this.form.controls.productId.value;
     return this.products().find((p) => p.id === Number(id));
   }

@@ -12,6 +12,14 @@ export interface Product {
   updatedDate?: string;
 }
 
+/** Vue allégée pour les listes déroulantes (GET /products/lite). */
+export interface ProductLite {
+  id: number;
+  reference: string;
+  name: string;
+  stockQuantity: number;
+}
+
 export interface ProductRequest {
   reference: string;
   name: string;
