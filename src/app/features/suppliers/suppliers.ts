@@ -6,6 +6,8 @@ import { SupplierService } from '../../core/services/supplier.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Supplier, SupplierRequest } from '../../core/models/supplier.models';
 import { PageResponse } from '../../core/models/product.models';
+import { apiErrorMessage } from '../../core/http/api-error';
+import { downloadBlob } from '../../core/http/download';
 
 @Component({
   imports: [CommonModule, ReactiveFormsModule, DatePipe],
@@ -32,6 +34,8 @@ export class Suppliers implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly importMessage = signal<string | null>(null);
   readonly importing = signal(false);
+  readonly saving = signal(false);
+  readonly deleting = signal(false);
 
   readonly canDelete = computed(() => this.auth.isAdmin());
 
@@ -57,16 +61,7 @@ export class Suppliers implements OnInit {
           this.totalElements.set(response.totalElements);
           this.totalPages.set(response.totalPages);
         },
-        error: (err) => {
-          const message = err?.error?.message ?? err?.error?.errors;
-          if (typeof message === 'string') {
-            this.errorMessage.set(message);
-          } else if (message) {
-            this.errorMessage.set(Object.values(message).join(' - ') as string);
-          } else {
-            this.errorMessage.set('Unable to load suppliers.');
-          }
-        },
+        error: (err) => this.errorMessage.set(apiErrorMessage(err, 'Unable to load suppliers.')),
       });
   }
 
@@ -105,7 +100,7 @@ export class Suppliers implements OnInit {
   }
 
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -122,20 +117,14 @@ export class Suppliers implements OnInit {
       ? this.supplierService.update(this.supplierInEdit()!.id, request)
       : this.supplierService.create(request);
 
-    call.subscribe({
+    this.saving.set(true);
+    call.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: () => {
         this.closeModal();
         this.load();
       },
       error: (err) => {
-        const message = err?.error?.message ?? err?.error?.errors;
-        if (typeof message === 'string') {
-          this.errorMessage.set(message);
-        } else if (message) {
-          this.errorMessage.set(Object.values(message).join(' - ') as string);
-        } else {
-          this.errorMessage.set('Error while saving.');
-        }
+        this.errorMessage.set(apiErrorMessage(err, 'Error while saving.'));
       },
     });
   }
@@ -146,18 +135,22 @@ export class Suppliers implements OnInit {
 
   delete(): void {
     const supplier = this.deleteInProgress();
-    if (!supplier) return;
+    if (!supplier || this.deleting()) return;
 
-    this.supplierService.delete(supplier.id).subscribe({
-      next: () => {
-        this.deleteInProgress.set(null);
-        this.load();
-      },
-      error: (err) => {
-        this.errorMessage.set(err?.error?.message ?? 'Error while deleting.');
-        this.deleteInProgress.set(null);
-      },
-    });
+    this.deleting.set(true);
+    this.supplierService
+      .delete(supplier.id)
+      .pipe(finalize(() => this.deleting.set(false)))
+      .subscribe({
+        next: () => {
+          this.deleteInProgress.set(null);
+          this.load();
+        },
+        error: (err) => {
+          this.errorMessage.set(apiErrorMessage(err, 'Error while deleting.'));
+          this.deleteInProgress.set(null);
+        },
+      });
   }
 
   onImportFile(event: Event): void {
@@ -180,19 +173,16 @@ export class Suppliers implements OnInit {
       error: (err) => {
         this.importing.set(false);
         (event.target as HTMLInputElement).value = '';
-        this.errorMessage.set(err?.error?.message ?? 'Erreur lors de l\'import.');
+        this.errorMessage.set(apiErrorMessage(err, "Erreur lors de l'import."));
       },
     });
   }
 
   downloadTemplate(): void {
-    this.supplierService.exportTemplate().subscribe((blob) => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'modele_fournisseurs.xlsx';
-      a.click();
-      window.URL.revokeObjectURL(url);
+    this.supplierService.exportTemplate().subscribe({
+      next: (blob) => downloadBlob(blob, 'modele_fournisseurs.xlsx'),
+      error: (err) =>
+        this.errorMessage.set(apiErrorMessage(err, 'Erreur lors du téléchargement du modèle.')),
     });
   }
 }

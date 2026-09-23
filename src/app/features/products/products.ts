@@ -8,6 +8,8 @@ import { CategoryService } from '../../core/services/category.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PageResponse, Product, ProductRequest } from '../../core/models/product.models';
 import { Category } from '../../core/models/category.models';
+import { apiErrorMessage } from '../../core/http/api-error';
+import { downloadBlob } from '../../core/http/download';
 
 @Component({
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -36,8 +38,9 @@ export class Products implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly importMessage = signal<string | null>(null);
   readonly importing = signal(false);
+  readonly saving = signal(false);
+  readonly deleting = signal(false);
 
-  readonly canManage = computed(() => true);
   readonly canDelete = computed(() => this.auth.isAdmin());
 
   readonly form = this.fb.nonNullable.group({
@@ -122,7 +125,7 @@ export class Products implements OnInit {
   }
 
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -141,20 +144,14 @@ export class Products implements OnInit {
       ? this.productService.update(this.productInEdit()!.id, request)
       : this.productService.create(request);
 
-    call.subscribe({
+    this.saving.set(true);
+    call.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: () => {
         this.closeModal();
         this.load();
       },
       error: (err) => {
-        const message = err?.error?.message ?? err?.error?.errors;
-        if (typeof message === 'string') {
-          this.errorMessage.set(message);
-        } else if (message) {
-          this.errorMessage.set(Object.values(message).join(' - ') as string);
-        } else {
-          this.errorMessage.set('Error while saving.');
-        }
+        this.errorMessage.set(apiErrorMessage(err, 'Error while saving.'));
       },
     });
   }
@@ -183,35 +180,36 @@ export class Products implements OnInit {
       error: (err) => {
         this.importing.set(false);
         (event.target as HTMLInputElement).value = '';
-        this.errorMessage.set(err?.error?.message ?? 'Erreur lors de l\'import.');
+        this.errorMessage.set(apiErrorMessage(err, "Erreur lors de l'import."));
       },
     });
   }
 
   downloadTemplate(): void {
-    this.productService.exportTemplate().subscribe((blob) => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'modele_produits.xlsx';
-      a.click();
-      window.URL.revokeObjectURL(url);
+    this.productService.exportTemplate().subscribe({
+      next: (blob) => downloadBlob(blob, 'modele_produits.xlsx'),
+      error: (err) =>
+        this.errorMessage.set(apiErrorMessage(err, 'Erreur lors du téléchargement du modèle.')),
     });
   }
 
   delete(): void {
     const product = this.deleteInProgress();
-    if (!product) return;
+    if (!product || this.deleting()) return;
 
-    this.productService.delete(product.id).subscribe({
-      next: () => {
-        this.deleteInProgress.set(null);
-        this.load();
-      },
-      error: (err) => {
-        this.errorMessage.set(err?.error?.message ?? 'Error while deleting.');
-        this.deleteInProgress.set(null);
-      },
-    });
+    this.deleting.set(true);
+    this.productService
+      .delete(product.id)
+      .pipe(finalize(() => this.deleting.set(false)))
+      .subscribe({
+        next: () => {
+          this.deleteInProgress.set(null);
+          this.load();
+        },
+        error: (err) => {
+          this.errorMessage.set(apiErrorMessage(err, 'Error while deleting.'));
+          this.deleteInProgress.set(null);
+        },
+      });
   }
 }

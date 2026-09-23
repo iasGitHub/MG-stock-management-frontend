@@ -6,6 +6,10 @@
     </div>
   </header>
 
+  @if (errorMessage(); as message) {
+    <div class="alert-error">{{ message }}</div>
+  }
+
   @if (loading()) {
     <p class="loading">Chargement des statistiques...</p>
   } @else if (stats(); as s) {

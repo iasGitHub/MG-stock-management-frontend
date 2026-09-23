@@ -5,6 +5,7 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
 import { Role, User, UserRequest } from '../../core/models/auth.models';
+import { apiErrorMessage } from '../../core/http/api-error';
 
 @Component({
   imports: [CommonModule, ReactiveFormsModule],
@@ -24,6 +25,8 @@ export class Users implements OnInit {
   readonly userInEdit = signal<User | null>(null);
   readonly deleteInProgress = signal<User | null>(null);
   readonly errorMessage = signal<string | null>(null);
+  readonly saving = signal(false);
+  readonly deleting = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
@@ -51,6 +54,7 @@ export class Users implements OnInit {
   openCreate(): void {
     this.userInEdit.set(null);
     this.form.reset({ username: '', password: '', fullName: '', role: 'MANAGEMENT', active: true });
+    this.applyPasswordValidators();
     this.modalOpen.set(true);
   }
 
@@ -63,20 +67,24 @@ export class Users implements OnInit {
       role: user.role,
       active: user.active,
     });
-    this.form.controls.password.setValidators([]);
-    this.form.controls.password.updateValueAndValidity();
+    this.applyPasswordValidators();
     this.modalOpen.set(true);
   }
 
   closeModal(): void {
-    this.form.controls.password.setValidators([Validators.minLength(6)]);
-    this.form.controls.password.updateValueAndValidity();
     this.modalOpen.set(false);
     this.errorMessage.set(null);
   }
 
+  /** Le mot de passe est obligatoire a la creation, optionnel a la mise a jour. */
+  private applyPasswordValidators(): void {
+    const control = this.form.controls.password;
+    control.setValidators(this.userInEdit() ? [] : [Validators.required, Validators.minLength(6)]);
+    control.updateValueAndValidity();
+  }
+
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -94,20 +102,14 @@ export class Users implements OnInit {
       ? this.userService.update(this.userInEdit()!.id, request)
       : this.userService.create({ ...request, password: value.password! });
 
-    call.subscribe({
+    this.saving.set(true);
+    call.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: () => {
         this.closeModal();
         this.load();
       },
       error: (err) => {
-        const message = err?.error?.message ?? err?.error?.errors;
-        if (typeof message === 'string') {
-          this.errorMessage.set(message);
-        } else if (message) {
-          this.errorMessage.set(Object.values(message).join(' - ') as string);
-        } else {
-          this.errorMessage.set('Error while saving.');
-        }
+        this.errorMessage.set(apiErrorMessage(err, 'Error while saving.'));
       },
     });
   }
@@ -118,21 +120,29 @@ export class Users implements OnInit {
 
   delete(): void {
     const user = this.deleteInProgress();
-    if (!user) return;
+    if (!user || this.deleting()) return;
 
-    this.userService.delete(user.id).subscribe({
-      next: () => {
-        this.deleteInProgress.set(null);
-        this.load();
-      },
-      error: (err) => {
-        this.errorMessage.set(err?.error?.message ?? 'Error while deleting.');
-        this.deleteInProgress.set(null);
-      },
-    });
+    this.deleting.set(true);
+    this.userService
+      .delete(user.id)
+      .pipe(finalize(() => this.deleting.set(false)))
+      .subscribe({
+        next: () => {
+          this.deleteInProgress.set(null);
+          this.load();
+        },
+        error: (err) => {
+          this.errorMessage.set(apiErrorMessage(err, 'Error while deleting.'));
+          this.deleteInProgress.set(null);
+        },
+      });
   }
 
   toggleActive(user: User): void {
-    this.userService.toggleActive(user.id).subscribe(() => this.load());
+    this.userService.toggleActive(user.id).subscribe({
+      next: () => this.load(),
+      error: (err) =>
+        this.errorMessage.set(apiErrorMessage(err, 'Impossible de mettre à jour le compte.')),
+    });
   }
 }

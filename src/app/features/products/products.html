@@ -180,8 +180,8 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
-          <button type="submit" class="btn btn-primary">
-            {{ productInEdit() ? 'Enregistrer' : 'Créer le produit' }}
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">
+            {{ saving() ? 'Enregistrement...' : productInEdit() ? 'Enregistrer' : 'Créer le produit' }}
           </button>
         </div>
       </form>
@@ -203,7 +203,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="deleteInProgress.set(null)">Annuler</button>
-        <button class="btn btn-danger delete-btn" (click)="delete()">Supprimer définitivement</button>
+        <button class="btn btn-danger delete-btn" [disabled]="deleting()" (click)="delete()">Supprimer définitivement</button>
       </div>
     </div>
   </div>

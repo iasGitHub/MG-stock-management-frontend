@@ -52,7 +52,16 @@
                 </td>
                 <td class="actions-cell">
                   <button class="btn btn-secondary btn-sm" (click)="openEdit(user)">Modifier</button>
-                  <button class="btn btn-secondary btn-sm" (click)="toggleActive(user)">
+                  <button
+                    class="btn btn-secondary btn-sm"
+                    [disabled]="user.id === auth.currentUser()?.id && user.active"
+                    [title]="
+                      user.id === auth.currentUser()?.id && user.active
+                        ? 'Impossible de désactiver votre propre compte'
+                        : ''
+                    "
+                    (click)="toggleActive(user)"
+                  >
                     {{ user.active ? 'Désactiver' : 'Activer' }}
                   </button>
                   @if (user.id !== auth.currentUser()?.id) {
@@ -116,8 +125,14 @@
               autocomplete="new-password"
               placeholder="6 caractères minimum"
             />
-            @if (!userInEdit() && form.controls.password.touched && form.controls.password.invalid) {
-              <span class="error">Au moins 6 caractères requis</span>
+            @if (form.controls.password.touched && form.controls.password.invalid) {
+              <span class="error">
+                {{
+                  form.controls.password.errors?.['required']
+                    ? 'Le mot de passe est obligatoire'
+                    : 'Au moins 6 caractères requis'
+                }}
+              </span>
             }
           </div>
         </div>
@@ -136,8 +151,8 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
-          <button type="submit" class="btn btn-primary">
-            {{ userInEdit() ? 'Enregistrer' : 'Créer le compte' }}
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">
+            {{ saving() ? 'Enregistrement...' : userInEdit() ? 'Enregistrer' : 'Créer le compte' }}
           </button>
         </div>
       </form>
@@ -158,7 +173,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="deleteInProgress.set(null)">Annuler</button>
-        <button class="btn btn-danger delete-btn" (click)="delete()">Supprimer définitivement</button>
+        <button class="btn btn-danger delete-btn" [disabled]="deleting()" (click)="delete()">Supprimer définitivement</button>
       </div>
     </div>
   </div>

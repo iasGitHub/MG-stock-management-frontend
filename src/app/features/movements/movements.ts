@@ -8,6 +8,8 @@ import { SupplierService } from '../../core/services/supplier.service';
 import { StockMovementRequest, StockMovement, MovementType } from '../../core/models/movement.models';
 import { Product } from '../../core/models/product.models';
 import { Supplier } from '../../core/models/supplier.models';
+import { apiErrorMessage } from '../../core/http/api-error';
+import { downloadBlob } from '../../core/http/download';
 
 @Component({
   imports: [CommonModule, ReactiveFormsModule],
@@ -36,6 +38,7 @@ export class Movements implements OnInit {
   readonly selectedType = signal<MovementType>('IN');
   readonly errorMessage = signal<string | null>(null);
   readonly exporting = signal(false);
+  readonly saving = signal(false);
 
   readonly cancelTarget = signal<StockMovement | null>(null);
   readonly cancelReason = this.fb.control<string>('', { nonNullable: true });
@@ -45,11 +48,11 @@ export class Movements implements OnInit {
   readonly form = this.fb.nonNullable.group({
     productId: [null as number | null, Validators.required],
     quantity: [1, [Validators.required, Validators.min(1)]],
-    reason: [''],
-    externalReference: [''],
+    reason: ['', Validators.maxLength(255)],
+    externalReference: ['', Validators.maxLength(100)],
     supplierId: [null as number | null],
     recipient: ['', Validators.maxLength(150)],
-    unitPrice: [null as number | null],
+    unitPrice: [null as number | null, Validators.min(0.01)],
   });
 
   ngOnInit(): void {
@@ -106,13 +109,12 @@ export class Movements implements OnInit {
 
     const supplierControl = this.form.controls.supplierId;
     const recipientControl = this.form.controls.recipient;
-    if (type === 'IN') {
-      supplierControl.addValidators(Validators.required);
-      recipientControl.clearValidators();
-    } else {
-      supplierControl.clearValidators();
-      recipientControl.setValidators([Validators.required, Validators.maxLength(150)]);
-    }
+    // setValidators (et non addValidators) : les validateurs ne s'accumulent pas
+    // d'une ouverture de modale a l'autre.
+    supplierControl.setValidators(type === 'IN' ? [Validators.required] : null);
+    recipientControl.setValidators(
+      type === 'OUT' ? [Validators.required, Validators.maxLength(150)] : null,
+    );
     supplierControl.updateValueAndValidity();
     recipientControl.updateValueAndValidity();
 
@@ -130,7 +132,7 @@ export class Movements implements OnInit {
   }
 
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -151,34 +153,30 @@ export class Movements implements OnInit {
         : { recipient: value.recipient || undefined }),
     };
 
-    this.movementService.record(request).subscribe({
-      next: () => {
-        this.closeModal();
-        this.load();
-      },
-      error: (err) => {
-        this.errorMessage.set(err?.error?.message ?? 'Error while saving the movement.');
-      },
-    });
+    this.saving.set(true);
+    this.movementService
+      .record(request)
+      .pipe(finalize(() => this.saving.set(false)))
+      .subscribe({
+        next: () => {
+          this.closeModal();
+          this.load();
+        },
+        error: (err) =>
+          this.errorMessage.set(apiErrorMessage(err, 'Error while saving the movement.')),
+      });
   }
 
   exportExcel(): void {
     this.exporting.set(true);
-    this.movementService.exportExcel(this.filterProductId() ?? undefined, this.filterType() ?? undefined).subscribe({
-      next: (blob) => {
-        this.exporting.set(false);
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `mouvements_stock_${new Date().toISOString().slice(0, 10)}.xlsx`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      },
-      error: () => {
-        this.exporting.set(false);
-        this.errorMessage.set('Erreur lors de l\'export Excel.');
-      },
-    });
+    this.movementService
+      .exportExcel(this.filterProductId() ?? undefined, this.filterType() ?? undefined)
+      .pipe(finalize(() => this.exporting.set(false)))
+      .subscribe({
+        next: (blob) =>
+          downloadBlob(blob, `mouvements_stock_${new Date().toISOString().slice(0, 10)}.xlsx`),
+        error: () => this.errorMessage.set("Erreur lors de l'export Excel."),
+      });
   }
 
   canCancel(movement: StockMovement): boolean {

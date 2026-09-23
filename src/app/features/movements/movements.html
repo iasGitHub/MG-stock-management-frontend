@@ -17,7 +17,7 @@
   <div class="filters card">
     <div class="filter-group">
       <label>Produit :</label>
-      <select (change)="filterByProduct($event)">
+      <select [value]="filterProductId() ?? ''" (change)="filterByProduct($event)">
         <option value="">Tous les produits</option>
         @for (product of products(); track product.id) {
           <option [value]="product.id">{{ product.name }} ({{ product.reference }})</option>
@@ -181,8 +181,11 @@
 
           <div class="form-group">
             <label>Prix unitaire (MRU)</label>
-            <input type="number" formControlName="unitPrice" min="0" />
+            <input type="number" formControlName="unitPrice" min="0.01" step="0.01" />
             <small class="help">Laisser vide = prix du produit</small>
+            @if (form.controls.unitPrice.touched && form.controls.unitPrice.invalid) {
+              <span class="error">Le prix doit être supérieur à 0</span>
+            }
           </div>
         </div>
 
@@ -222,6 +225,9 @@
             formControlName="reason"
             [placeholder]="selectedType() === 'IN' ? 'Ex : Réception fournisseur' : 'Ex : Vente client, Dotation...'"
           />
+          @if (form.controls.reason.touched && form.controls.reason.invalid) {
+            <span class="error">Le motif ne doit pas dépasser 255 caractères</span>
+          }
         </div>
 
         <div class="form-group">
@@ -231,6 +237,11 @@
             formControlName="externalReference"
             placeholder="N° facture, bon de commande..."
           />
+          @if (
+            form.controls.externalReference.touched && form.controls.externalReference.invalid
+          ) {
+            <span class="error">La référence ne doit pas dépasser 100 caractères</span>
+          }
         </div>
 
         <div class="modal-footer">
@@ -238,10 +249,11 @@
           <button
             type="submit"
             class="btn"
+            [disabled]="saving()"
             [class.btn-success]="selectedType() === 'IN'"
             [class.btn-primary]="selectedType() === 'OUT'"
           >
-            Valider le mouvement
+            {{ saving() ? 'Enregistrement...' : 'Valider le mouvement' }}
           </button>
         </div>
       </form>
@@ -271,7 +283,6 @@
       <div class="form-group">
         <label>Motif de l'annulation</label>
         <input
-          #reasonInput
           type="text"
           [formControl]="cancelReason"
           placeholder="Ex : Erreur de saisie, retour marchandise..."
