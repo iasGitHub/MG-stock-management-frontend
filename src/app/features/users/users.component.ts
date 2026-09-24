@@ -30,6 +30,11 @@ export class UsersComponent implements OnInit {
   readonly saving = signal(false);
   readonly deleting = signal(false);
 
+  readonly resetTarget = signal<User | null>(null);
+  readonly resetting = signal(false);
+  readonly temporaryPassword = signal<string | null>(null);
+  readonly copiedPassword = signal(false);
+
   readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
     password: ['', [Validators.minLength(6)]],
@@ -146,5 +151,46 @@ export class UsersComponent implements OnInit {
       error: (err) =>
         this.errorMessage.set(apiErrorMessage(err, 'Impossible de mettre à jour le compte.')),
     });
+  }
+
+  confirmReset(user: User): void {
+    this.errorMessage.set(null);
+    this.resetTarget.set(user);
+  }
+
+  reset(): void {
+    const user = this.resetTarget();
+    if (!user || this.resetting()) return;
+
+    this.resetting.set(true);
+    this.userService
+      .resetPassword(user.id)
+      .pipe(finalize(() => this.resetting.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.resetTarget.set(null);
+          this.temporaryPassword.set(response.temporaryPassword);
+          this.copiedPassword.set(false);
+        },
+        error: (err) => {
+          this.errorMessage.set(apiErrorMessage(err, 'Erreur lors de la réinitialisation.'));
+          this.resetTarget.set(null);
+        },
+      });
+  }
+
+  closeResetResult(): void {
+    this.temporaryPassword.set(null);
+  }
+
+  async copyTemporaryPassword(): Promise<void> {
+    const password = this.temporaryPassword();
+    if (!password) return;
+    try {
+      await navigator.clipboard.writeText(password);
+      this.copiedPassword.set(true);
+    } catch {
+      this.copiedPassword.set(false);
+    }
   }
 }

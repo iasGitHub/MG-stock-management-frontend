@@ -68,6 +68,13 @@
                 >
                   {{ user.active ? 'Désactiver' : 'Activer' }}
                 </button>
+                <button
+                  class="btn btn-secondary btn-sm"
+                  title="Réinitialiser le mot de passe"
+                  (click)="confirmReset(user)"
+                >
+                  Réinitialiser
+                </button>
                 @if (user.id !== auth.currentUser()?.id) {
                   <button class="btn btn-danger btn-sm" (click)="confirmDelete(user)">
                     Supprimer
@@ -178,6 +185,56 @@
         <button class="btn btn-secondary" (click)="deleteInProgress.set(null)">Annuler</button>
         <button class="btn btn-danger delete-btn" [disabled]="deleting()" (click)="delete()">
           Supprimer définitivement
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (resetTarget(); as user) {
+  <div class="modal-backdrop" (click)="resetTarget.set(null)">
+    <div class="modal small" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Réinitialiser le mot de passe</h3>
+        <button class="close" type="button" (click)="resetTarget.set(null)">×</button>
+      </div>
+      <div class="confirm-body">
+        Générer un mot de passe temporaire pour <strong>« {{ user.username }} »</strong> ? Son mot
+        de passe actuel cessera de fonctionner et il devra en définir un nouveau à sa prochaine
+        connexion. Ses données et son historique sont conservés.
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" (click)="resetTarget.set(null)">
+          Annuler
+        </button>
+        <button class="btn btn-primary" type="button" [disabled]="resetting()" (click)="reset()">
+          {{ resetting() ? 'Génération...' : 'Générer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (temporaryPassword(); as password) {
+  <div class="modal-backdrop" (click)="closeResetResult()">
+    <div class="modal small" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Mot de passe temporaire généré</h3>
+        <button class="close" type="button" (click)="closeResetResult()">×</button>
+      </div>
+      <div class="confirm-body">
+        Transmettez ce mot de passe à l'utilisateur : il ne sera plus affiché après la fermeture de
+        cette fenêtre, et il devra en définir un nouveau à sa prochaine connexion.
+        <div class="temp-password-row">
+          <code class="temp-password">{{ password }}</code>
+          <button class="btn btn-secondary btn-sm" type="button" (click)="copyTemporaryPassword()">
+            {{ copiedPassword() ? 'Copié ✓' : 'Copier' }}
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="button" (click)="closeResetResult()">
+          J'ai noté le mot de passe
         </button>
       </div>
     </div>

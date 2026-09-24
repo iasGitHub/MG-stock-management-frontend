@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User, UserRequest } from '../models/auth.models';
+import { PasswordResetResponse, User, UserRequest } from '../models/auth.models';
 import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
@@ -28,5 +28,9 @@ export class UserService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  resetPassword(id: number): Observable<PasswordResetResponse> {
+    return this.http.post<PasswordResetResponse>(`${this.apiUrl}/${id}/reset-password`, {});
   }
 }

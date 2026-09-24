@@ -35,3 +35,7 @@ export interface UserRequest {
   role: Role;
   active: boolean;
 }
+
+export interface PasswordResetResponse {
+  temporaryPassword: string;
+}
