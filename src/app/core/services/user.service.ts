@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, UserRequest } from '../models/auth.models';
@@ -6,9 +6,9 @@ import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly apiUrl = `${appEnv.apiUrl}/users`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = `${appEnv.apiUrl}/users`;
 
   findAll(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);

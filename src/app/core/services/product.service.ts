@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse, Product, ProductLite, ProductRequest } from '../models/product.models';
@@ -6,11 +6,17 @@ import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
+  private http = inject(HttpClient);
+
   private readonly apiUrl = `${appEnv.apiUrl}/products`;
 
-  constructor(private http: HttpClient) {}
-
-  findAll(search = '', page = 0, size = 10, sortBy = 'name', sortDir = 'asc'): Observable<PageResponse<Product>> {
+  findAll(
+    search = '',
+    page = 0,
+    size = 10,
+    sortBy = 'name',
+    sortDir = 'asc',
+  ): Observable<PageResponse<Product>> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)
@@ -49,7 +55,8 @@ export class ProductService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<{ created: number; skipped: number; total: number }>(
-      `${this.apiUrl}/import`, formData
+      `${this.apiUrl}/import`,
+      formData,
     );
   }
 

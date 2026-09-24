@@ -10,7 +10,9 @@
         {{ exporting() ? 'Export...' : '📥 Exporter Excel' }}
       </button>
       <button class="btn btn-success" (click)="openModal('IN')">⬇ Nouvelle entrée</button>
-      <button class="btn btn-danger sortie-btn" (click)="openModal('OUT')">⬆ Nouvelle sortie</button>
+      <button class="btn btn-danger sortie-btn" (click)="openModal('OUT')">
+        ⬆ Nouvelle sortie
+      </button>
     </div>
   </div>
 
@@ -27,21 +29,23 @@
 
     <div class="filter-group type-filters">
       <label>Type :</label>
-      <button
-        class="chip"
-        [class.active]="filterType() === null"
-        (click)="filterByType(null)"
-      >Tous</button>
+      <button class="chip" [class.active]="filterType() === null" (click)="filterByType(null)">
+        Tous
+      </button>
       <button
         class="chip entree"
         [class.active]="filterType() === 'IN'"
         (click)="filterByType('IN')"
-      >Entrées</button>
+      >
+        Entrées
+      </button>
       <button
         class="chip sortie"
         [class.active]="filterType() === 'OUT'"
         (click)="filterByType('OUT')"
-      >Sorties</button>
+      >
+        Sorties
+      </button>
     </div>
   </div>
 
@@ -58,71 +62,79 @@
       [totalPages]="totalPages()"
       (pageChange)="goToPage($event)"
     >
-        <table class="table">
-          <thead>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Prix unitaire</th>
+            <th>Motif / Référence</th>
+            <th>Fournisseur / Destinataire</th>
+            <th>Utilisateur</th>
+            <th class="col-actions">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (movement of movements(); track movement.id) {
             <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Produit</th>
-              <th>Quantité</th>
-              <th>Prix unitaire</th>
-              <th>Motif / Référence</th>
-              <th>Fournisseur / Destinataire</th>
-              <th>Utilisateur</th>
-              <th class="col-actions">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (movement of movements(); track movement.id) {
-              <tr>
-                <td>{{ movement.movementDate | date: 'dd/MM/yyyy HH:mm' }}</td>
-                <td>
-                  @if (movement.type === 'IN') {
-                    <span class="badge badge-success">Entrée</span>
-                  } @else {
-                    <span class="badge badge-danger">Sortie</span>
-                  }
-                  @if (movement.reversesId) {
-                    <br />
-                    <span class="badge badge-correction">↩ Correction de #{{ movement.reversesId }}</span>
-                  }
-                </td>
-                <td>
-                  <strong>{{ movement.productName }}</strong>
+              <td>{{ movement.movementDate | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                @if (movement.type === 'IN') {
+                  <span class="badge badge-success">Entrée</span>
+                } @else {
+                  <span class="badge badge-danger">Sortie</span>
+                }
+                @if (movement.reversesId) {
                   <br />
-                  <code>{{ movement.productReference }}</code>
-                </td>
-                <td><strong>{{ movement.quantity }}</strong></td>
-                <td>{{ movement.unitPrice | number: '1.0-0' }} MRU</td>
-                <td>
-                  @if (movement.reason) {<span>{{ movement.reason }}</span>}
-                  @if (movement.externalReference) {
-                    <br />
-                    <small class="ref-ext">Réf. : {{ movement.externalReference }}</small>
-                  }
-                </td>
-                <td>
-                  @if (movement.type === 'IN') {
-                    @if (movement.supplierName) {
-                      <code>{{ movement.supplierNif }}</code>
-                      {{ movement.supplierName }}
-                    } @else {
-                      —
-                    }
+                  <span class="badge badge-correction"
+                    >↩ Correction de #{{ movement.reversesId }}</span
+                  >
+                }
+              </td>
+              <td>
+                <strong>{{ movement.productName }}</strong>
+                <br />
+                <code>{{ movement.productReference }}</code>
+              </td>
+              <td>
+                <strong>{{ movement.quantity }}</strong>
+              </td>
+              <td>{{ movement.unitPrice | number: '1.0-0' }} MRU</td>
+              <td>
+                @if (movement.reason) {
+                  <span>{{ movement.reason }}</span>
+                }
+                @if (movement.externalReference) {
+                  <br />
+                  <small class="ref-ext">Réf. : {{ movement.externalReference }}</small>
+                }
+              </td>
+              <td>
+                @if (movement.type === 'IN') {
+                  @if (movement.supplierName) {
+                    <code>{{ movement.supplierNif }}</code>
+                    {{ movement.supplierName }}
                   } @else {
-                    {{ movement.recipient || '—' }}
+                    —
                   }
-                </td>
-                <td>{{ movement.userName }}</td>
-                <td class="col-actions">
-                  @if (canCancel(movement)) {
-                    <button class="btn btn-cancel" (click)="openCancelModal(movement)">↩ Annuler</button>
-                  }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+                } @else {
+                  {{ movement.recipient || '—' }}
+                }
+              </td>
+              <td>{{ movement.userName }}</td>
+              <td class="col-actions">
+                @if (canCancel(movement)) {
+                  <button class="btn btn-cancel" (click)="openCancelModal(movement)">
+                    ↩ Annuler
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </app-paged-list>
   </div>
 </div>
@@ -130,7 +142,11 @@
 @if (modalOpen()) {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modal-header" [class.header-entree]="selectedType() === 'IN'" [class.header-sortie]="selectedType() === 'OUT'">
+      <div
+        class="modal-header"
+        [class.header-entree]="selectedType() === 'IN'"
+        [class.header-sortie]="selectedType() === 'OUT'"
+      >
         <h3>
           {{ selectedType() === 'IN' ? '⬇ Enregistrer une entrée' : '⬆ Enregistrer une sortie' }}
         </h3>
@@ -216,7 +232,11 @@
           <input
             type="text"
             formControlName="reason"
-            [placeholder]="selectedType() === 'IN' ? 'Ex : Réception fournisseur' : 'Ex : Vente client, Dotation...'"
+            [placeholder]="
+              selectedType() === 'IN'
+                ? 'Ex : Réception fournisseur'
+                : 'Ex : Vente client, Dotation...'
+            "
           />
           @if (form.controls.reason.touched && form.controls.reason.invalid) {
             <span class="error">Le motif ne doit pas dépasser 255 caractères</span>
@@ -230,9 +250,7 @@
             formControlName="externalReference"
             placeholder="N° facture, bon de commande..."
           />
-          @if (
-            form.controls.externalReference.touched && form.controls.externalReference.invalid
-          ) {
+          @if (form.controls.externalReference.touched && form.controls.externalReference.invalid) {
             <span class="error">La référence ne doit pas dépasser 100 caractères</span>
           }
         </div>
@@ -264,9 +282,11 @@
 
       <p class="cancel-summary">
         Un mouvement inverse (
-        <strong>{{ target.type === 'IN' ? 'sortie' : 'entrée' }}</strong>, quantité
+        <strong>{{ target.type === 'IN' ? 'sortie' : 'entrée' }}</strong
+        >, quantité
         <strong>{{ target.quantity }}</strong>
-        ) sera enregistré pour {{ target.productName }}. Le mouvement d'origine reste conservé pour l'audit.
+        ) sera enregistré pour {{ target.productName }}. Le mouvement d'origine reste conservé pour
+        l'audit.
       </p>
 
       @if (cancelError(); as message) {
@@ -290,7 +310,7 @@
           [disabled]="canceling()"
           (click)="confirmCancel()"
         >
-          {{ canceling() ? 'Annulation...' : 'Confirmer l\'annulation' }}
+          {{ canceling() ? 'Annulation...' : "Confirmer l'annulation" }}
         </button>
       </div>
     </div>

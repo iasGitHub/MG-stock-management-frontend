@@ -13,7 +13,9 @@ export const routes: Routes = [
     path: 'change-password',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/change-password/change-password.component').then((m) => m.ChangePasswordComponent),
+      import('./features/change-password/change-password.component').then(
+        (m) => m.ChangePasswordComponent,
+      ),
     title: 'Changer le mot de passe - Gestion de Stock',
   },
   {
@@ -23,23 +25,28 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+        loadComponent: () =>
+          import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
         title: 'Tableau de bord - Gestion de Stock',
       },
       {
         path: 'products',
-        loadComponent: () => import('./features/products/products.component').then((m) => m.ProductsComponent),
+        loadComponent: () =>
+          import('./features/products/products.component').then((m) => m.ProductsComponent),
         title: 'Produits - Gestion de Stock',
       },
       {
         path: 'products/:id',
         loadComponent: () =>
-          import('./features/product-detail/product-detail.component').then((m) => m.ProductDetailComponent),
+          import('./features/product-detail/product-detail.component').then(
+            (m) => m.ProductDetailComponent,
+          ),
         title: 'Détail produit - Gestion de Stock',
       },
       {
         path: 'movements',
-        loadComponent: () => import('./features/movements/movements.component').then((m) => m.MovementsComponent),
+        loadComponent: () =>
+          import('./features/movements/movements.component').then((m) => m.MovementsComponent),
         title: 'Mouvements - Gestion de Stock',
       },
       {

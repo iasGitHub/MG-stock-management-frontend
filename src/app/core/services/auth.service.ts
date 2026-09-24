@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
@@ -18,6 +18,9 @@ interface StoredUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+
   private readonly apiUrl = `${appEnv.apiUrl}/auth`;
 
   private readonly userSignal = signal<StoredUser | null>(this.readUser());
@@ -25,8 +28,6 @@ export class AuthService {
   readonly isLoggedIn = computed(() => !!this.userSignal() && !!this.token());
   readonly isAdmin = computed(() => this.userSignal()?.role === 'ADMIN');
   readonly mustChangePassword = computed(() => this.userSignal()?.mustChangePassword ?? false);
-
-  constructor(private http: HttpClient, private router: Router) {}
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, request).pipe(
@@ -41,14 +42,14 @@ export class AuthService {
         };
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         this.userSignal.set(user);
-      })
+      }),
     );
   }
 
   changePassword(request: ChangePasswordRequest): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/change-password`, request).pipe(
-      tap(() => this.setMustChangePassword(false))
-    );
+    return this.http
+      .post<void>(`${this.apiUrl}/change-password`, request)
+      .pipe(tap(() => this.setMustChangePassword(false)));
   }
 
   setMustChangePassword(value: boolean): void {

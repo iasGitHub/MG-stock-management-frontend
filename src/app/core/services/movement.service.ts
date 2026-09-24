@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StockMovementRequest, StockMovement, MovementType } from '../models/movement.models';
@@ -7,11 +7,16 @@ import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class MovementService {
+  private http = inject(HttpClient);
+
   private readonly apiUrl = `${appEnv.apiUrl}/movements`;
 
-  constructor(private http: HttpClient) {}
-
-  findAll(productId?: number, type?: MovementType, page = 0, size = 10): Observable<PageResponse<StockMovement>> {
+  findAll(
+    productId?: number,
+    type?: MovementType,
+    page = 0,
+    size = 10,
+  ): Observable<PageResponse<StockMovement>> {
     let params = new HttpParams().set('page', page).set('size', size);
     if (productId != null) params = params.set('productId', productId);
     if (type) params = params.set('type', type);

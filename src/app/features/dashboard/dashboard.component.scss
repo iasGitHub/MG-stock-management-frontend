@@ -48,12 +48,24 @@
     border-radius: 12px;
     font-size: 20px;
 
-    &.primary { background: var(--primary-light); }
-    &.quantity { background: #ecfeff; }
-    &.warning { background: var(--warning-bg); }
-    &.value { background: var(--success-bg); }
-    &.in { background: #eff6ff; }
-    &.out { background: #fdf2f8; }
+    &.primary {
+      background: var(--primary-light);
+    }
+    &.quantity {
+      background: #ecfeff;
+    }
+    &.warning {
+      background: var(--warning-bg);
+    }
+    &.value {
+      background: var(--success-bg);
+    }
+    &.in {
+      background: #eff6ff;
+    }
+    &.out {
+      background: #fdf2f8;
+    }
   }
 
   &.alert {

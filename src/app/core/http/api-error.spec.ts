@@ -19,7 +19,7 @@ describe('apiErrorMessage', () => {
     expect(apiErrorMessage(undefined, 'fallback')).toBe('fallback');
   });
 
-  it("retourne le repli quand le message est vide", () => {
+  it('retourne le repli quand le message est vide', () => {
     expect(apiErrorMessage({ error: { message: '   ' } }, 'fallback')).toBe('fallback');
   });
 });

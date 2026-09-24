@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -175,7 +182,7 @@ export class ProductsComponent implements OnInit {
         this.importing.set(false);
         (event.target as HTMLInputElement).value = '';
         this.importMessage.set(
-          `${res.created} produit(s) créé(s), ${res.skipped} ignoré(s) (total ${res.total}). Le stock initial est enregistré comme entrée « Import initial ».`
+          `${res.created} produit(s) créé(s), ${res.skipped} ignoré(s) (total ${res.total}). Le stock initial est enregistré comme entrée « Import initial ».`,
         );
         this.load();
       },

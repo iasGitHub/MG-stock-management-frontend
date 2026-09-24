@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse } from '../models/product.models';
@@ -7,11 +7,17 @@ import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class SupplierService {
+  private http = inject(HttpClient);
+
   private readonly apiUrl = `${appEnv.apiUrl}/suppliers`;
 
-  constructor(private http: HttpClient) {}
-
-  findAll(search = '', page = 0, size = 10, sortBy = 'name', sortDir = 'asc'): Observable<PageResponse<Supplier>> {
+  findAll(
+    search = '',
+    page = 0,
+    size = 10,
+    sortBy = 'name',
+    sortDir = 'asc',
+  ): Observable<PageResponse<Supplier>> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)
@@ -42,7 +48,8 @@ export class SupplierService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<{ created: number; skipped: number; total: number }>(
-      `${this.apiUrl}/import`, formData
+      `${this.apiUrl}/import`,
+      formData,
     );
   }
 

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -63,7 +70,8 @@ export class SuppliersComponent implements OnInit {
           this.totalElements.set(response.totalElements);
           this.totalPages.set(response.totalPages);
         },
-        error: (err) => this.errorMessage.set(apiErrorMessage(err, 'Impossible de charger les fournisseurs.')),
+        error: (err) =>
+          this.errorMessage.set(apiErrorMessage(err, 'Impossible de charger les fournisseurs.')),
       });
   }
 
@@ -168,7 +176,7 @@ export class SuppliersComponent implements OnInit {
         this.importing.set(false);
         (event.target as HTMLInputElement).value = '';
         this.importMessage.set(
-          `${res.created} fournisseur(s) créé(s), ${res.skipped} ignoré(s) (total ${res.total}).`
+          `${res.created} fournisseur(s) créé(s), ${res.skipped} ignoré(s) (total ${res.total}).`,
         );
         this.load();
       },

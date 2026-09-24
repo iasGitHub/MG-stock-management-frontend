@@ -13,7 +13,7 @@ function normalizeApiUrl(base: string): string {
 }
 
 function resolveApiUrl(): string {
-  const fromWindow = (window as any)?.API_URL;
+  const fromWindow = (window as Window & { API_URL?: unknown }).API_URL;
   if (typeof fromWindow === 'string' && fromWindow.trim() !== '') {
     return normalizeApiUrl(fromWindow);
   }

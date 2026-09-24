@@ -48,7 +48,7 @@ export class ChangePasswordComponent {
         error: (err) => {
           const message = err?.error?.message;
           this.errorMessage.set(
-            typeof message === 'string' ? message : 'Échec du changement de mot de passe.'
+            typeof message === 'string' ? message : 'Échec du changement de mot de passe.',
           );
         },
       });

@@ -19,11 +19,9 @@
         class="hidden-file"
         (change)="onImportFile($event)"
       />
-      <button
-        class="btn btn-secondary"
-        (click)="fileInput.click()"
-        [disabled]="importing()"
-      >📥 Importer Excel</button>
+      <button class="btn btn-secondary" (click)="fileInput.click()" [disabled]="importing()">
+        📥 Importer Excel
+      </button>
       <button class="btn btn-outline-primary" (click)="downloadTemplate()">⬇ Modèle</button>
       <button class="btn btn-primary" (click)="openCreate()">+ Nouveau produit</button>
     </div>
@@ -45,51 +43,61 @@
       [totalPages]="totalPages()"
       (pageChange)="goToPage($event)"
     >
-        <table class="table">
-          <thead>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Stock</th>
+            <th>Seuil min.</th>
+            <th>Prix unitaire</th>
+            <th>État</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products(); track product.id) {
             <tr>
-              <th>Référence</th>
-              <th>Nom</th>
-              <th>Catégorie</th>
-              <th>Stock</th>
-              <th>Seuil min.</th>
-              <th>Prix unitaire</th>
-              <th>État</th>
-              <th>Actions</th>
+              <td>
+                <code>{{ product.reference }}</code>
+              </td>
+              <td>
+                <a class="link" [routerLink]="['/products', product.id]"
+                  ><strong>{{ product.name }}</strong></a
+                >
+                @if (product.description) {
+                  <br />
+                  <small class="desc">{{ product.description }}</small>
+                }
+              </td>
+              <td>{{ product.category }}</td>
+              <td>
+                <strong>{{ product.stockQuantity }}</strong>
+              </td>
+              <td>{{ product.minThreshold }}</td>
+              <td>{{ product.unitPrice | number: '1.0-0' }} MRU</td>
+              <td>
+                @if (product.inAlert) {
+                  <span class="badge badge-danger">⚠ Alerte stock</span>
+                } @else {
+                  <span class="badge badge-success">✓ OK</span>
+                }
+              </td>
+              <td class="actions-cell">
+                <button class="btn btn-secondary btn-sm" (click)="openEdit(product)">
+                  Modifier
+                </button>
+                @if (canDelete()) {
+                  <button class="btn btn-danger btn-sm" (click)="confirmDelete(product)">
+                    Supprimer
+                  </button>
+                }
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            @for (product of products(); track product.id) {
-              <tr>
-                <td><code>{{ product.reference }}</code></td>
-                <td>
-                  <a class="link" [routerLink]="['/products', product.id]"><strong>{{ product.name }}</strong></a>
-                  @if (product.description) {
-                    <br />
-                    <small class="desc">{{ product.description }}</small>
-                  }
-                </td>
-                <td>{{ product.category }}</td>
-                <td><strong>{{ product.stockQuantity }}</strong></td>
-                <td>{{ product.minThreshold }}</td>
-                <td>{{ product.unitPrice | number: '1.0-0' }} MRU</td>
-                <td>
-                  @if (product.inAlert) {
-                    <span class="badge badge-danger">⚠ Alerte stock</span>
-                  } @else {
-                    <span class="badge badge-success">✓ OK</span>
-                  }
-                </td>
-                <td class="actions-cell">
-                  <button class="btn btn-secondary btn-sm" (click)="openEdit(product)">Modifier</button>
-                  @if (canDelete()) {
-                    <button class="btn btn-danger btn-sm" (click)="confirmDelete(product)">Supprimer</button>
-                  }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+          }
+        </tbody>
+      </table>
     </app-paged-list>
   </div>
 </div>
@@ -143,7 +151,11 @@
 
         <div class="form-group">
           <label>Description</label>
-          <textarea formControlName="description" rows="2" placeholder="Description (optionnel)"></textarea>
+          <textarea
+            formControlName="description"
+            rows="2"
+            placeholder="Description (optionnel)"
+          ></textarea>
         </div>
 
         <div class="form-row three">
@@ -166,7 +178,10 @@
           @if (!productInEdit()) {
             <div class="form-group">
               <label>Stock</label>
-              <small class="help">Le stock est géré dans Mouvements (Entrée / Sortie). Après la création de la fiche, utilisez « + Nouvelle entrée » pour approvisionner.</small>
+              <small class="help"
+                >Le stock est géré dans Mouvements (Entrée / Sortie). Après la création de la fiche,
+                utilisez « + Nouvelle entrée » pour approvisionner.</small
+              >
             </div>
           }
         </div>
@@ -174,7 +189,9 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
           <button type="submit" class="btn btn-primary" [disabled]="saving()">
-            {{ saving() ? 'Enregistrement...' : productInEdit() ? 'Enregistrer' : 'Créer le produit' }}
+            {{
+              saving() ? 'Enregistrement...' : productInEdit() ? 'Enregistrer' : 'Créer le produit'
+            }}
           </button>
         </div>
       </form>
@@ -191,12 +208,14 @@
       </div>
       <div class="confirm-body">
         Voulez-vous vraiment supprimer le produit
-        <strong>« {{ product.name }} »</strong> ({{ product.reference }}) ?
-        Cette action est irréversible.
+        <strong>« {{ product.name }} »</strong> ({{ product.reference }}) ? Cette action est
+        irréversible.
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="deleteInProgress.set(null)">Annuler</button>
-        <button class="btn btn-danger delete-btn" [disabled]="deleting()" (click)="delete()">Supprimer définitivement</button>
+        <button class="btn btn-danger delete-btn" [disabled]="deleting()" (click)="delete()">
+          Supprimer définitivement
+        </button>
       </div>
     </div>
   </div>

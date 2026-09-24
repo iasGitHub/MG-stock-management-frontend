@@ -81,7 +81,9 @@
         <tbody>
           @for (product of productsInAlert(); track product.id) {
             <tr>
-              <td><code>{{ product.reference }}</code></td>
+              <td>
+                <code>{{ product.reference }}</code>
+              </td>
               <td>{{ product.name }}</td>
               <td>{{ product.category }}</td>
               <td>

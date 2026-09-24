@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse } from '../models/product.models';
@@ -7,11 +7,17 @@ import { appEnv } from '../config/env';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
+  private http = inject(HttpClient);
+
   private readonly apiUrl = `${appEnv.apiUrl}/categories`;
 
-  constructor(private http: HttpClient) {}
-
-  findAll(search = '', page = 0, size = 10, sortBy = 'name', sortDir = 'asc'): Observable<PageResponse<Category>> {
+  findAll(
+    search = '',
+    page = 0,
+    size = 10,
+    sortBy = 'name',
+    sortDir = 'asc',
+  ): Observable<PageResponse<Category>> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)

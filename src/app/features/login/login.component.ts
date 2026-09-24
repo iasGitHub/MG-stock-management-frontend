@@ -33,7 +33,8 @@ export class LoginComponent {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    this.authService.login(this.form.getRawValue())
+    this.authService
+      .login(this.form.getRawValue())
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () =>
@@ -43,7 +44,9 @@ export class LoginComponent {
         error: (err) => {
           const message = err?.error?.message;
           this.errorMessage.set(
-            typeof message === 'string' ? message : 'Échec de la connexion. Vérifiez vos identifiants.'
+            typeof message === 'string'
+              ? message
+              : 'Échec de la connexion. Vérifiez vos identifiants.',
           );
         },
       });

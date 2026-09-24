@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
 import { ProductService } from '../../core/services/product.service';
 import { MovementService } from '../../core/services/movement.service';
 import { Product } from '../../core/models/product.models';

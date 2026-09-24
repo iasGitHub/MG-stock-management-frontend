@@ -5,7 +5,11 @@ import { finalize } from 'rxjs';
 import { MovementService } from '../../core/services/movement.service';
 import { ProductService } from '../../core/services/product.service';
 import { SupplierService } from '../../core/services/supplier.service';
-import { StockMovementRequest, StockMovement, MovementType } from '../../core/models/movement.models';
+import {
+  StockMovementRequest,
+  StockMovement,
+  MovementType,
+} from '../../core/models/movement.models';
 import { ProductLite } from '../../core/models/product.models';
 import { SupplierLite } from '../../core/models/supplier.models';
 import { PagedListComponent } from '../../core/components/paged-list/paged-list';
@@ -172,7 +176,9 @@ export class MovementsComponent implements OnInit {
           this.load();
         },
         error: (err) =>
-          this.errorMessage.set(apiErrorMessage(err, "Erreur lors de l'enregistrement du mouvement.")),
+          this.errorMessage.set(
+            apiErrorMessage(err, "Erreur lors de l'enregistrement du mouvement."),
+          ),
       });
   }
 
@@ -218,7 +224,7 @@ export class MovementsComponent implements OnInit {
       },
       error: (err) => {
         this.canceling.set(false);
-        this.cancelError.set(err?.error?.message ?? 'Impossible d\'annuler ce mouvement.');
+        this.cancelError.set(err?.error?.message ?? "Impossible d'annuler ce mouvement.");
       },
     });
   }

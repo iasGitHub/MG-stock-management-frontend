@@ -101,7 +101,9 @@
                     }
                   </td>
                   <td>
-                    @if (m.reason) { {{ m.reason }} }
+                    @if (m.reason) {
+                      {{ m.reason }}
+                    }
                     @if (m.externalReference) {
                       <br /><small class="ref-ext">Réf. : {{ m.externalReference }}</small>
                     }

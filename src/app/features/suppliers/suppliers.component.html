@@ -19,11 +19,9 @@
         class="hidden-file"
         (change)="onImportFile($event)"
       />
-      <button
-        class="btn btn-secondary"
-        (click)="fileInput.click()"
-        [disabled]="importing()"
-      >📥 Importer Excel</button>
+      <button class="btn btn-secondary" (click)="fileInput.click()" [disabled]="importing()">
+        📥 Importer Excel
+      </button>
       <button class="btn btn-outline-primary" (click)="downloadTemplate()">⬇ Modèle</button>
       <button class="btn btn-primary" (click)="openCreate()">+ Nouveau fournisseur</button>
     </div>
@@ -45,37 +43,48 @@
       [totalPages]="totalPages()"
       (pageChange)="goToPage($event)"
     >
-        <table class="table">
-          <thead>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>NIF</th>
+            <th>Nom</th>
+            <th>Téléphone</th>
+            <th>Adresse</th>
+            <th>Créé le</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (supplier of suppliers(); track supplier.id) {
             <tr>
-              <th>NIF</th>
-              <th>Nom</th>
-              <th>Téléphone</th>
-              <th>Adresse</th>
-              <th>Créé le</th>
-              <th>Actions</th>
+              <td>
+                <code>{{ supplier.nif }}</code>
+              </td>
+              <td>
+                <strong>{{ supplier.name }}</strong>
+              </td>
+              <td>{{ supplier.phone || '—' }}</td>
+              <td>{{ supplier.address || '—' }}</td>
+              <td>{{ supplier.createdDate | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn btn-secondary btn-sm" (click)="openEdit(supplier)">
+                    Modifier
+                  </button>
+                  @if (canDelete()) {
+                    <button
+                      class="btn btn-danger btn-sm delete-btn"
+                      (click)="confirmDelete(supplier)"
+                    >
+                      Supprimer
+                    </button>
+                  }
+                </div>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            @for (supplier of suppliers(); track supplier.id) {
-              <tr>
-                <td><code>{{ supplier.nif }}</code></td>
-                <td><strong>{{ supplier.name }}</strong></td>
-                <td>{{ supplier.phone || '—' }}</td>
-                <td>{{ supplier.address || '—' }}</td>
-                <td>{{ supplier.createdDate | date: 'dd/MM/yyyy' }}</td>
-                <td>
-                  <div class="actions-cell">
-                    <button class="btn btn-secondary btn-sm" (click)="openEdit(supplier)">Modifier</button>
-                    @if (canDelete()) {
-                      <button class="btn btn-danger btn-sm delete-btn" (click)="confirmDelete(supplier)">Supprimer</button>
-                    }
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+          }
+        </tbody>
+      </table>
     </app-paged-list>
   </div>
 </div>
@@ -153,12 +162,14 @@
       </div>
       <div class="confirm-body">
         Voulez-vous vraiment supprimer le fournisseur
-        <strong>« {{ supplier.name }} »</strong> ({{ supplier.nif }}) ?
-        Cette action est irréversible.
+        <strong>« {{ supplier.name }} »</strong> ({{ supplier.nif }}) ? Cette action est
+        irréversible.
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="deleteInProgress.set(null)">Annuler</button>
-        <button class="btn btn-danger delete-btn" [disabled]="deleting()" (click)="delete()">Supprimer définitivement</button>
+        <button class="btn btn-danger delete-btn" [disabled]="deleting()" (click)="delete()">
+          Supprimer définitivement
+        </button>
       </div>
     </div>
   </div>

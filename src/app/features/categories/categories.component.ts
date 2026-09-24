@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -57,7 +64,8 @@ export class CategoriesComponent implements OnInit {
           this.totalElements.set(response.totalElements);
           this.totalPages.set(response.totalPages);
         },
-        error: (err) => this.errorMessage.set(apiErrorMessage(err, 'Impossible de charger les catégories.')),
+        error: (err) =>
+          this.errorMessage.set(apiErrorMessage(err, 'Impossible de charger les catégories.')),
       });
   }
 
