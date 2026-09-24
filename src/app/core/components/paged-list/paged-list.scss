@@ -1,0 +1,7 @@
+// États de la liste partagés (les styles .table-scroll et .pagination sont globaux).
+.loading,
+.empty {
+  padding: 30px;
+  text-align: center;
+  color: var(--gray-500);
+}

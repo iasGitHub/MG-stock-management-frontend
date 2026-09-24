@@ -37,12 +37,14 @@
   }
 
   <div class="card table-card">
-    @if (loading()) {
-      <p class="loading">Chargement...</p>
-    } @else if (suppliers().length === 0) {
-      <p class="empty">Aucun fournisseur trouvé. Créez votre premier fournisseur !</p>
-    } @else {
-      <div class="table-scroll">
+    <app-paged-list
+      [loading]="loading()"
+      [empty]="suppliers().length === 0"
+      emptyMessage="Aucun fournisseur trouvé. Créez votre premier fournisseur !"
+      [page]="page()"
+      [totalPages]="totalPages()"
+      (pageChange)="goToPage($event)"
+    >
         <table class="table">
           <thead>
             <tr>
@@ -74,16 +76,7 @@
             }
           </tbody>
         </table>
-      </div>
-
-      <div class="pagination">
-        <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>
-        <div class="actions">
-          <button [disabled]="page() === 0" (click)="goToPage(page() - 1)">‹ Précédent</button>
-          <button [disabled]="page() >= totalPages() - 1" (click)="goToPage(page() + 1)">Suivant ›</button>
-        </div>
-      </div>
-    }
+    </app-paged-list>
   </div>
 </div>
 

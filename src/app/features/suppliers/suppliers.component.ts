@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -6,16 +6,18 @@ import { SupplierService } from '../../core/services/supplier.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Supplier, SupplierRequest } from '../../core/models/supplier.models';
 import { PageResponse } from '../../core/models/product.models';
+import { PagedListComponent } from '../../core/components/paged-list/paged-list';
 import { apiErrorMessage } from '../../core/http/api-error';
 import { downloadBlob } from '../../core/http/download';
 
 @Component({
-  imports: [CommonModule, ReactiveFormsModule, DatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, PagedListComponent, ReactiveFormsModule, DatePipe],
   selector: 'app-suppliers',
-  templateUrl: './suppliers.html',
-  styleUrl: './suppliers.scss',
+  templateUrl: './suppliers.component.html',
+  styleUrl: './suppliers.component.scss',
 })
-export class Suppliers implements OnInit {
+export class SuppliersComponent implements OnInit {
   private readonly supplierService = inject(SupplierService);
   readonly auth = inject(AuthService);
   private readonly fb = new FormBuilder();

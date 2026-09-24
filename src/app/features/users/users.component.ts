@@ -1,19 +1,21 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
 import { Role, User, UserRequest } from '../../core/models/auth.models';
+import { PagedListComponent } from '../../core/components/paged-list/paged-list';
 import { apiErrorMessage } from '../../core/http/api-error';
 
 @Component({
-  imports: [CommonModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, PagedListComponent, ReactiveFormsModule],
   selector: 'app-users',
-  templateUrl: './users.html',
-  styleUrl: './users.scss',
+  templateUrl: './users.component.html',
+  styleUrl: './users.component.scss',
 })
-export class Users implements OnInit {
+export class UsersComponent implements OnInit {
   private readonly userService = inject(UserService);
   readonly auth = inject(AuthService);
   private readonly fb = new FormBuilder();

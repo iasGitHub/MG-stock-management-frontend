@@ -1,16 +1,17 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule],
   selector: 'app-change-password',
-  templateUrl: './change-password.html',
-  styleUrl: './change-password.scss',
+  templateUrl: './change-password.component.html',
+  styleUrl: './change-password.component.scss',
 })
-export class ChangePassword {
+export class ChangePasswordComponent {
   private readonly fb = new FormBuilder();
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);

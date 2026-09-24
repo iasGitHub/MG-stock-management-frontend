@@ -1,0 +1,19 @@
+@if (loading()) {
+  <p class="loading">Chargement...</p>
+} @else if (empty()) {
+  <p class="empty">{{ emptyMessage() }}</p>
+} @else {
+  <div class="table-scroll">
+    <ng-content />
+  </div>
+
+  @if (paginated()) {
+    <div class="pagination">
+      <span>Page {{ page() + 1 }} / {{ totalPages() || 1 }}</span>
+      <div class="actions">
+        <button [disabled]="page() === 0" (click)="pageChange.emit(page() - 1)">‹ Précédent</button>
+        <button [disabled]="page() >= totalPages() - 1" (click)="pageChange.emit(page() + 1)">Suivant ›</button>
+      </div>
+    </div>
+  }
+}

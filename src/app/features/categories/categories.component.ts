@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -6,15 +6,17 @@ import { CategoryService } from '../../core/services/category.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Category, CategoryRequest } from '../../core/models/category.models';
 import { PageResponse } from '../../core/models/product.models';
+import { PagedListComponent } from '../../core/components/paged-list/paged-list';
 import { apiErrorMessage } from '../../core/http/api-error';
 
 @Component({
-  imports: [CommonModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, PagedListComponent, ReactiveFormsModule],
   selector: 'app-categories',
-  templateUrl: './categories.html',
-  styleUrl: './categories.scss',
+  templateUrl: './categories.component.html',
+  styleUrl: './categories.component.scss',
 })
-export class Categories implements OnInit {
+export class CategoriesComponent implements OnInit {
   private readonly categoryService = inject(CategoryService);
   readonly auth = inject(AuthService);
   private readonly fb = new FormBuilder();

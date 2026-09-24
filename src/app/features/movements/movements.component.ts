@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -8,16 +8,18 @@ import { SupplierService } from '../../core/services/supplier.service';
 import { StockMovementRequest, StockMovement, MovementType } from '../../core/models/movement.models';
 import { ProductLite } from '../../core/models/product.models';
 import { SupplierLite } from '../../core/models/supplier.models';
+import { PagedListComponent } from '../../core/components/paged-list/paged-list';
 import { apiErrorMessage } from '../../core/http/api-error';
 import { downloadBlob } from '../../core/http/download';
 
 @Component({
-  imports: [CommonModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, PagedListComponent, ReactiveFormsModule],
   selector: 'app-movements',
-  templateUrl: './movements.html',
-  styleUrl: './movements.scss',
+  templateUrl: './movements.component.html',
+  styleUrl: './movements.component.scss',
 })
-export class Movements implements OnInit {
+export class MovementsComponent implements OnInit {
   private readonly movementService = inject(MovementService);
   private readonly productService = inject(ProductService);
   private readonly supplierService = inject(SupplierService);

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
@@ -8,12 +8,13 @@ import { Product } from '../../core/models/product.models';
 import { apiErrorMessage } from '../../core/http/api-error';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterLink],
   selector: 'app-dashboard',
-  templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss',
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
 })
-export class Dashboard implements OnInit {
+export class DashboardComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
 
   readonly stats = signal<DashboardStats | null>(null);

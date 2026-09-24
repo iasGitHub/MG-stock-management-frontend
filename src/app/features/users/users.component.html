@@ -15,12 +15,12 @@
   }
 
   <div class="card table-card">
-    @if (loading()) {
-      <p class="loading">Chargement...</p>
-    } @else if (users().length === 0) {
-      <p class="empty">Aucun utilisateur.</p>
-    } @else {
-      <div class="table-scroll">
+    <app-paged-list
+      [loading]="loading()"
+      [empty]="users().length === 0"
+      emptyMessage="Aucun utilisateur."
+      [paginated]="false"
+    >
         <table class="table">
           <thead>
             <tr>
@@ -72,8 +72,7 @@
             }
           </tbody>
         </table>
-      </div>
-    }
+    </app-paged-list>
   </div>
 </div>
 

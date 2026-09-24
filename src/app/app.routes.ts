@@ -6,59 +6,59 @@ export const routes: Routes = [
   {
     path: 'login',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/login/login').then((m) => m.Login),
+    loadComponent: () => import('./features/login/login.component').then((m) => m.LoginComponent),
     title: 'Connexion - Gestion de Stock',
   },
   {
     path: 'change-password',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/change-password/change-password').then((m) => m.ChangePassword),
+      import('./features/change-password/change-password.component').then((m) => m.ChangePasswordComponent),
     title: 'Changer le mot de passe - Gestion de Stock',
   },
   {
     path: '',
     canActivate: [authGuard, passwordChangeGuard],
-    loadComponent: () => import('./layout/shell/shell').then((m) => m.Shell),
+    loadComponent: () => import('./layout/shell/shell.component').then((m) => m.ShellComponent),
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+        loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
         title: 'Tableau de bord - Gestion de Stock',
       },
       {
         path: 'products',
-        loadComponent: () => import('./features/products/products').then((m) => m.Products),
+        loadComponent: () => import('./features/products/products.component').then((m) => m.ProductsComponent),
         title: 'Produits - Gestion de Stock',
       },
       {
         path: 'products/:id',
         loadComponent: () =>
-          import('./features/product-detail/product-detail').then((m) => m.ProductDetail),
+          import('./features/product-detail/product-detail.component').then((m) => m.ProductDetailComponent),
         title: 'Détail produit - Gestion de Stock',
       },
       {
         path: 'movements',
-        loadComponent: () => import('./features/movements/movements').then((m) => m.Movements),
+        loadComponent: () => import('./features/movements/movements.component').then((m) => m.MovementsComponent),
         title: 'Mouvements - Gestion de Stock',
       },
       {
         path: 'suppliers',
         loadComponent: () =>
-          import('./features/suppliers/suppliers').then((m) => m.Suppliers),
+          import('./features/suppliers/suppliers.component').then((m) => m.SuppliersComponent),
         title: 'Fournisseurs - Gestion de Stock',
       },
       {
         path: 'categories',
         loadComponent: () =>
-          import('./features/categories/categories').then((m) => m.Categories),
+          import('./features/categories/categories.component').then((m) => m.CategoriesComponent),
         title: 'Catégories - Gestion de Stock',
       },
       {
         path: 'users',
         canActivate: [adminGuard],
         loadComponent: () =>
-          import('./features/users/users').then((m) => m.Users),
+          import('./features/users/users.component').then((m) => m.UsersComponent),
         title: 'Utilisateurs - Gestion de Stock',
       },
     ],
