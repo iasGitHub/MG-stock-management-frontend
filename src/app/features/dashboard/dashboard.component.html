@@ -67,36 +67,38 @@
   @if (!loading() && productsInAlert().length > 0) {
     <section class="card alerts-section">
       <h2>🚨 Produits à réapprovisionner</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Référence</th>
-            <th>Nom</th>
-            <th>Catégorie</th>
-            <th>Stock actuel</th>
-            <th>Seuil minimum</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (product of productsInAlert(); track product.id) {
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
             <tr>
-              <td>
-                <code>{{ product.reference }}</code>
-              </td>
-              <td>{{ product.name }}</td>
-              <td>{{ product.category }}</td>
-              <td>
-                <span class="badge badge-danger">{{ product.stockQuantity }}</span>
-              </td>
-              <td>{{ product.minThreshold }}</td>
-              <td>
-                <a routerLink="/movements" class="link">Approvisionner →</a>
-              </td>
+              <th>Référence</th>
+              <th>Nom</th>
+              <th>Catégorie</th>
+              <th>Stock actuel</th>
+              <th>Seuil minimum</th>
+              <th></th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (product of productsInAlert(); track product.id) {
+              <tr>
+                <td>
+                  <code>{{ product.reference }}</code>
+                </td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>
+                  <span class="badge badge-danger">{{ product.stockQuantity }}</span>
+                </td>
+                <td>{{ product.minThreshold }}</td>
+                <td>
+                  <a routerLink="/movements" class="link">Approvisionner →</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </section>
   }
 </div>
